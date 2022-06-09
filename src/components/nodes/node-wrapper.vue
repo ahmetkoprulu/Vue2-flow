@@ -96,13 +96,12 @@ export default {
     onNodeDragStarted(_) {},
     onNodeDragged(e) {
       if (this.connecting) return;
-      this.node.x = e.x;
-      this.node.y = e.y;
-
-      d3.select("[id='" + this.node.id + "']").attr(
-        "transform",
-        "translate(" + (e.x - this.node.x) + "," + (e.y - this.node.y) + ")"
-      );
+      this.node.x += e.dx;
+      this.node.y += e.dy;
+      // d3.select("[id='" + this.node.id + "']").attr(
+      //   "transform",
+      //   "translate(" + e.dx + "," + e.dy + ")"
+      // );
     },
     onNodeDragEnded(e) {
       if (this.connecting) return;
