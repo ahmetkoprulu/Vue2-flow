@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <Chart />
+    <Chart
+      @connection-click="onConnectionClicked"
+      @node-click="onConnectionClicked"
+      @node-contextmenu="onConnectionClicked"
+    />
   </div>
 </template>
 
@@ -8,6 +12,11 @@
 import Chart from "./components/FlowChart.vue";
 export default {
   name: "App",
+  methods: {
+    onConnectionClicked(conn) {
+      console.log(conn);
+    },
+  },
   components: {
     Chart,
   },

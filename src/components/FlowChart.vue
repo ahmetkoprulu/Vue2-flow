@@ -7,6 +7,8 @@
       height="500"
       @mousemove="onChartMouseMove"
       @mouseup="onChartMouseUp"
+      @contextmenu.prevent="$emit('chart-contextmenu', $event)"
+      @click="$emit('chart-click', $event)"
     >
       <Background :width="960" :height="500" :transformation="transformation" />
       <g id="nodes">
@@ -15,6 +17,8 @@
           :transformation="transformation"
           @connecting="onConnecting"
           @connected="onConnected"
+          @click="$emit('node-click', $event)"
+          @contextmenu="$emit('node-contextmenu', $event)"
           v-for="n in internalNodes"
           :key="n.id"
         />
@@ -25,6 +29,8 @@
           :conn="conn"
           v-for="conn in includedConnection"
           :key="conn.id"
+          @click="$emit('connection-click', $event)"
+          @contextmenu="$emit('connection-contextmenu', $event)"
         />
       </g>
       <ConnectionLine :info="connectingInfo" v-if="connecting" />
@@ -243,12 +249,6 @@ export default {
 
       return { x: Math.trunc(actualX), y: Math.trunc(actualY) };
     },
-    onEdgeClicked() {},
-    onDoubleClick() {},
-    onEdgeContextMenu() {},
-    onNodeClicked() {},
-    onNodeDoubleClick() {},
-    onNodeContextMenu() {},
     onConnecting(e, n, c) {
       this.connecting = true;
       this.connectingInfo.source = n;
@@ -286,21 +286,27 @@ export default {
       console.log(this.includedConnection);
     },
     onChartMouseMove(e) {
-      if (this.connecting) {
-        let pCursor = this.getRelativeCursorPosition(e);
-        this.connectingInfo.destinationPosition = pCursor;
+      if (!this.connecting) {
+        this.$emit("chart-mousemove");
+        return;
       }
+
+      let pCursor = this.getRelativeCursorPosition(e);
+      this.connectingInfo.destinationPosition = pCursor;
     },
     onChartMouseUp(_) {
-      if (this.connecting) {
-        this.connectingInfo = {
-          source: null,
-          sourcePosition: null,
-          destination: null,
-          destinationPosition: null,
-        };
-        this.connecting = false;
+      if (!this.connecting) {
+        this.$emit("chart-mouseup");
+        return;
       }
+
+      this.connectingInfo = {
+        source: null,
+        sourcePosition: null,
+        destination: null,
+        destinationPosition: null,
+      };
+      this.connecting = false;
     },
   },
   props: {

@@ -1,5 +1,10 @@
 <template>
-  <g :id="node.id" class="node">
+  <g
+    :id="node.id"
+    class="node"
+    @click="$emit('click', node)"
+    @contextmenu.prevent="$emit('contextmenu', node)"
+  >
     <rect
       :id="`${node.id}-shape`"
       rx="5"

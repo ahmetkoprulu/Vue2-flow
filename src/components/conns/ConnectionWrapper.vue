@@ -6,6 +6,8 @@
       selected: conn.selected,
       animated: conn.animated,
     }"
+    @click="$emit('click', $event, conn)"
+    @contextmenu.prevent="$emit('contextmenu', $event, conn)"
   >
     <component
       :is="conn.type"
