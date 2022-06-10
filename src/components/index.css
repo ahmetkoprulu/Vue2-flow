@@ -11,9 +11,6 @@
 }
 
 #chart {
-  position: relative;
-  width: 800px;
-  height: 600px;
   border: 1px solid #ccc;
 }
 
@@ -23,9 +20,7 @@
 }
 
 .chart__container {
-  position: absolute;
-  height: 100%;
-  width: 100%;
+  position: relative;
   left: 0;
   top: 0;
 }
@@ -81,8 +76,15 @@
   transform-origin: 0 0;
   box-sizing: border-box;
 }
+
+.chart__footer {
+  position: absolute;
+  bottom: 6px;
+}
+
 .chart__arrowhead {
 }
+
 .chart__minimap {
   position: absolute;
   z-index: 5;

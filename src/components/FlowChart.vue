@@ -1,10 +1,9 @@
 <template>
-  <div>
-    <button @click="addNode">sa</button>
+  <div class="chart__container">
     <svg
-      style="border: 1px solid #ccc"
-      width="960"
-      height="500"
+      id="chart"
+      :width="width"
+      :height="height"
       @mousemove="onChartMouseMove"
       @mouseup="onChartMouseUp"
       @contextmenu.prevent="$emit('chart-contextmenu', $event)"
@@ -19,7 +18,7 @@
           @connected="onConnected"
           @click="$emit('node-click', $event)"
           @contextmenu="$emit('node-contextmenu', $event)"
-          v-for="n in internalNodes"
+          v-for="n in nodes"
           :key="n.id"
         />
       </g>
@@ -35,6 +34,9 @@
       </g>
       <ConnectionLine :info="connectingInfo" v-if="connecting" />
     </svg>
+    <div class="chart__footer" :style="footerStyle">
+      <slot name="footer" />
+    </div>
   </div>
 </template>
 
@@ -52,124 +54,6 @@ export default {
   name: "FlowChart",
   data() {
     return {
-      internalNodes: [
-        {
-          id: 1,
-          x: 84.453125,
-          y: 189,
-          width: 120,
-          height: 50,
-          name: "Start",
-          type: "input",
-          shape: "rect",
-        },
-        {
-          id: 2,
-          x: 782.453125,
-          y: 188,
-          width: 120,
-          height: 50,
-          name: "End",
-          type: "output",
-          shape: "rect",
-        },
-        {
-          id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-          x: 427.453125,
-          y: 73,
-          width: 120,
-          height: 50,
-          name: "IK Onay",
-          type: "start",
-          shape: "rect",
-        },
-        {
-          id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-          x: 326.453125,
-          y: 339,
-          width: 120,
-          height: 50,
-          name: "Yonetici Onay",
-          type: "start",
-          shape: "rect",
-        },
-        {
-          id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-          x: 550.453125,
-          y: 338,
-          width: 120,
-          height: 50,
-          name: "Son Onay",
-          type: "start",
-          shape: "rect",
-        },
-      ],
-      internalConnections: [
-        {
-          id: "357080f7-b3d3-4d4a-bfdd-0ddfb6c42905",
-          source: {
-            id: 1,
-            position: "right",
-          },
-          destination: {
-            id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-            position: "left",
-          },
-          type: "bezier",
-          animated: true,
-          markerEnd: "arrow",
-        },
-        {
-          id: "b3c13204-0003-4619-ad92-8514eeaf9e6c",
-          source: {
-            id: 1,
-            position: "right",
-          },
-          destination: {
-            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-            position: "left",
-          },
-          type: "bezier",
-          markerEnd: "arrowclosed",
-        },
-        {
-          id: "c7712c70-07cf-42e4-ae72-289407decb42",
-          source: {
-            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-            position: "right",
-          },
-          destination: {
-            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-            position: "left",
-          },
-          type: "bezier",
-          markerEnd: "arrowclosed",
-        },
-        {
-          id: "0dbba44a-3356-4504-b814-6b08ae3a005d",
-          source: {
-            id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-            position: "right",
-          },
-          destination: {
-            id: 2,
-            position: "left",
-          },
-          type: "smoothstep",
-        },
-        {
-          id: "0936c57d-680a-4ec6-8bc8-6c73feb04c74",
-          source: {
-            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-            position: "right",
-          },
-          destination: {
-            id: 2,
-            position: "left",
-          },
-          type: "step",
-        },
-      ],
       connecting: false,
       connectingInfo: {
         source: null,
@@ -183,14 +67,12 @@ export default {
   },
   computed: {
     includedConnection() {
-      return this.internalConnections
+      return this.connections
         .map((conn) => {
-          let sourceNode = this.internalNodes.find(
-            (node) => node.id == conn.source.id
-          );
+          let sourceNode = this.nodes.find((node) => node.id == conn.source.id);
           if (!sourceNode) return null;
 
-          let destNode = this.internalNodes.find(
+          let destNode = this.nodes.find(
             (node) => node.id == conn.destination.id
           );
           if (!destNode) return null;
@@ -210,7 +92,7 @@ export default {
         .filter((conn) => conn != null);
     },
     connectionMarkers() {
-      return this.internalConnections.filter((conn) => conn.markerEnd);
+      return this.connections.filter((conn) => conn.markerEnd);
     },
   },
   mounted() {
@@ -228,7 +110,7 @@ export default {
   },
   methods: {
     addNode() {
-      this.internalNodes.push({
+      this.nodes.push({
         id: uuidv4(),
         x: 0,
         y: 0,
@@ -266,14 +148,14 @@ export default {
     },
     onConnected(_, n, c) {
       this.connecting = false;
-      let existConnection = this.internalConnections.find(
+      let existConnection = this.connections.find(
         (conn) =>
           conn.source.id == this.connectingInfo.source.id &&
           conn.destination.id == n.id
       );
       if (existConnection) return;
 
-      this.internalConnections.push({
+      this.connections.push({
         id: uuidv4(),
         source: {
           id: this.connectingInfo.source.id,
@@ -309,12 +191,6 @@ export default {
       this.connecting = false;
     },
   },
-  props: {
-    width: { type: [String, Number], default: "500px" },
-    height: { type: [String, Number], default: "500px" },
-    canvasWidth: { type: [String, Number], default: "1000px" },
-    canvasHeight: { type: [String, Number], default: "1000px" },
-  },
   watch: {
     selectedNode(n, o) {
       if (n) {
@@ -323,13 +199,22 @@ export default {
       if (o) {
       }
     },
-    // internalNodes: {
+    // nodes: {
     //   deep: true,
     //   handler: function (n) {
     //     console.log("sa");
     //     this.renderNodes();
     //   },
     // },
+  },
+  props: {
+    width: { type: [String, Number], default: "100%" },
+    height: { type: [String, Number], default: "500px" },
+    nodes: { type: Array, default: () => [] },
+    connections: { type: Array, default: () => [] },
+    canvasWidth: { type: [String, Number], default: "1000px" },
+    canvasHeight: { type: [String, Number], default: "1000px" },
+    footerStyle: { type: Object, default: () => {} },
   },
   components: {
     Background,
