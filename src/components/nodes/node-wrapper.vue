@@ -18,15 +18,14 @@
       stroke-width="1px"
     >
     </rect>
-    <text
-      class="chart__text"
-      :x="textX"
-      :y="textY"
-      dominant-baseline="middle"
-      text-anchor="middle"
+    <foreignObject
+      :x="node.x + 5"
+      :y="node.y + 5"
+      :width="node.width - 10"
+      :height="node.height - 10"
     >
-      {{ node.name }}
-    </text>
+      <span class="node__content">{{ node.name }}</span>
+    </foreignObject>
     <circle
       :id="`${node.id}-connector-${c.side}`"
       :cx="c.x"
@@ -66,10 +65,10 @@ export default {
       return [left, right];
     },
     textX() {
-      return this.node.x + this.node.width / 2;
+      return this.node.x + 10;
     },
     textY() {
-      return this.node.y + this.node.height / 2;
+      return this.node.y + 5;
     },
   },
   mounted() {
@@ -130,3 +129,5 @@ export default {
   },
 };
 </script>
+
+<style src="../index.css"></style>
