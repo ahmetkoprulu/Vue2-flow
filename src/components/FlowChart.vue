@@ -33,7 +33,7 @@
           @contextmenu="$emit('connection-contextmenu', $event)"
         />
       </g>
-      <ConnectionLine :info="connectingInfo" v-if="connecting" />
+      <ConnectionLine :info="connectingInfo" v-show="connecting" />
     </svg>
     <div class="chart__footer" :style="footerStyle">
       <slot name="footer" />
@@ -98,16 +98,12 @@ export default {
   },
   mounted() {
     this.svg = d3.select("svg");
-    var width = +this.svg.attr("width");
-    var height = +this.svg.attr("height");
 
-    var zoom = d3.zoom().on("zoom", this.zoomed);
+    var zoom = d3.zoom().on("zoom", this.onZoomed);
     this.svg
       .on("mousedown", () => (this.selectedNode = null))
       .on("wheel", this.wheeled);
-    // .call(zoom)
-    // .on("dblclick.zoom", null)
-    // .call(zoom.transform, d3.zoomIdentity);
+    this.svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
   },
   methods: {
     addNode() {
@@ -122,15 +118,21 @@ export default {
         shape: "rect",
       });
     },
-    zoomed(e) {
+    onZoomed(e) {
       this.transformation = e.transform;
+      d3.select("g#nodes").attr("transform", e.transform);
+      d3.select("g#connections").attr("transform", e.transform);
+      d3.select("g#connection-line").attr("transform", e.transform);
+      console.log(this.nodes);
     },
     getRelativeCursorPosition(e) {
       let boundingClientRect = e.currentTarget.getBoundingClientRect();
       let actualX = e.pageX - boundingClientRect.left - window.scrollX;
       let actualY = e.pageY - boundingClientRect.top - window.scrollY;
+      var x = (actualX - this.transformation.x) / this.transformation.k;
+      var y = (actualY - this.transformation.y) / this.transformation.k;
 
-      return { x: Math.trunc(actualX), y: Math.trunc(actualY) };
+      return { x: Math.trunc(x), y: Math.trunc(y) };
     },
     onConnecting(e, n, c) {
       this.connecting = true;

@@ -9,10 +9,13 @@ import { getBezierPath, getSmoothStepPath } from "@/utils/svg";
 export default {
   computed: {
     path() {
+      if (!this.info.destinationPosition) return;
+
       let x =
         this.info.destinationPosition.x > this.info.sourcePosition.x
           ? this.info.destinationPosition.x - 5
           : this.info.destinationPosition.x + 5;
+
       return getBezierPath({
         sourceX: this.info.sourcePosition.x,
         sourceY: this.info.sourcePosition.y,

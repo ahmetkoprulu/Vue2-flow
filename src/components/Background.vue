@@ -44,7 +44,7 @@ export default {
     transformation(transformation) {
       if (!transformation) return;
 
-      this.scaledGap = 40 * transformation.k;
+      this.scaledGap = 20 * transformation.k;
 
       if (this.variant == "lines") {
         this.d = `M${this.scaledGap / 2} 0 V${this.scaledGap} M0 ${
