@@ -97,3 +97,11 @@
   align-items: center;
   justify-content: center;
 }
+
+.connector__hidden {
+  visibility: hidden;
+}
+
+.node:hover > .connector__hidden {
+  visibility: visible;
+}

@@ -27,19 +27,35 @@
       <span class="node__content">{{ node.name }}</span>
     </foreignObject>
     <circle
-      :id="`${node.id}-connector-${c.side}`"
-      :cx="c.x"
-      :cy="c.y"
+      v-if="connectors.left"
+      v-show="isConnecting"
+      :id="`${node.id}-connector-left`"
+      :cx="connectors.left.x"
+      :cy="connectors.left.y"
       r="4"
       class="connector"
       fill="black"
       stroke="white"
-      v-for="c in connectors"
-      :key="`${node.id}-connector-${c.side}`"
+      :key="`${node.id}-connector-left`"
       @mouseover="onConnectorMouseOver"
       @mouseleave="onConnectorMouseLeave"
-      @mousedown="(e) => onConnectorClick(e, c)"
-      @mouseup="(e) => onConnectorMouseUp(e, c)"
+      @mouseup="(e) => onConnectorMouseUp(e, connectors.left)"
+    />
+    <circle
+      v-if="connectors.right"
+      v-show="!isConnecting"
+      :id="`${node.id}-connector-right`"
+      :cx="connectors.right.x"
+      :cy="connectors.right.y"
+      r="4"
+      class="connector connector__hidden"
+      fill="black"
+      stroke="white"
+      :key="`${node.id}-connector-right`"
+      @mouseover="onConnectorMouseOver"
+      @mouseleave="onConnectorMouseLeave"
+      @mousedown="(e) => onConnectorClick(e, connectors.right)"
+      @mousemove="(e) => e.stopPropagation()"
     />
   </g>
 </template>
@@ -51,18 +67,17 @@ export default {
       const halfWidth = this.node.width / 2;
       const halfHeight = this.node.height / 2;
       // let top = { x: node.x + halfWidth, y: node.y - 10 };
-      let left = { x: this.node.x, y: this.node.y + halfHeight, side: "left" };
+      let left = { x: this.node.x, y: this.node.y + halfHeight };
       // let bottom = { x: node.x + halfWidth, y: node.y + node.height + 10 };
       let right = {
         x: this.node.x + this.node.width,
         y: this.node.y + halfHeight,
-        side: "right",
       };
 
-      if (this.node.type == "input") return [right];
-      else if (this.node.type == "output") return [left];
+      if (this.node.type == "input") return { right };
+      else if (this.node.type == "output") return { left };
 
-      return [left, right];
+      return { left, right };
     },
     textX() {
       return this.node.x + 10;
@@ -92,6 +107,7 @@ export default {
     },
     onConnectorClick(e, c) {
       e.stopPropagation();
+      e.preventDefault();
       this.$emit("connecting", e, this.node, c);
     },
     onConnectorMouseUp(e, c) {
@@ -123,8 +139,9 @@ export default {
     transformation: {
       default: null,
     },
-    direction: {
-      default: () => ["left", "right"],
+    isConnecting: {
+      type: Boolean,
+      default: false,
     },
   },
 };

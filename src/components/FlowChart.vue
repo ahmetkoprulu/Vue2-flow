@@ -14,6 +14,7 @@
         <Node
           :node="n"
           :transformation="transformation"
+          :is-connecting="connecting"
           @connecting="onConnecting"
           @connected="onConnected"
           @click="$emit('node-click', $event)"
