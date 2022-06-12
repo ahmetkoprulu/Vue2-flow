@@ -4,63 +4,77 @@
     class="node"
     @click="$emit('click', node)"
     @contextmenu.prevent="$emit('contextmenu', node)"
+    @focus="onNodeFocus"
+    @blur="onNodeFocusOut"
   >
-    <rect
-      :id="`${node.id}-shape`"
-      rx="5"
-      ry="5"
-      :x="node.x"
-      :y="node.y"
-      :width="node.width"
-      :height="node.height"
-      fill="white"
-      stroke="black"
-      stroke-width="1px"
-    >
-    </rect>
-    <foreignObject
-      :x="node.x + 5"
-      :y="node.y + 5"
-      :width="node.width - 10"
-      :height="node.height - 10"
-    >
-      <span class="node__content">{{ node.name }}</span>
-    </foreignObject>
-    <circle
-      v-if="connectors.left"
-      v-show="isConnecting"
-      :id="`${node.id}-connector-left`"
-      :cx="connectors.left.x"
-      :cy="connectors.left.y"
-      r="4"
-      class="connector"
-      fill="black"
-      stroke="white"
-      :key="`${node.id}-connector-left`"
-      @mouseover="onConnectorMouseOver"
-      @mouseleave="onConnectorMouseLeave"
-      @mouseup="(e) => onConnectorMouseUp(e, connectors.left)"
-    />
-    <circle
-      v-if="connectors.right"
-      v-show="!isConnecting"
-      :id="`${node.id}-connector-right`"
-      :cx="connectors.right.x"
-      :cy="connectors.right.y"
-      r="4"
-      class="connector connector__hidden"
-      fill="black"
-      stroke="white"
-      :key="`${node.id}-connector-right`"
-      @mouseover="onConnectorMouseOver"
-      @mouseleave="onConnectorMouseLeave"
-      @mousedown="(e) => onConnectorClick(e, connectors.right)"
-      @mousemove="(e) => e.stopPropagation()"
-    />
+    <!-- Resize Frame -->
+    <ResizeFrame ref="resizeFrame" :node="node" />
+
+    <g :id="`${node.id}-node`">
+      <!-- Node -->
+      <rect
+        :id="`${node.id}-shape`"
+        rx="5"
+        ry="5"
+        :x="node.x"
+        :y="node.y"
+        :width="node.width"
+        :height="node.height"
+        fill="white"
+        stroke="black"
+        stroke-width="1px"
+      >
+      </rect>
+
+      <!-- Node Content -->
+      <foreignObject
+        :x="node.x + 5"
+        :y="node.y + 5"
+        :width="node.width - 10"
+        :height="node.height - 10"
+      >
+        <span class="node__content">{{ node.name }}</span>
+      </foreignObject>
+
+      <!-- Connectors -->
+      <circle
+        v-if="connectors.left"
+        v-show="isConnecting"
+        :id="`${node.id}-connector-left`"
+        :cx="connectors.left.x"
+        :cy="connectors.left.y"
+        r="4"
+        class="connector"
+        fill="black"
+        stroke="white"
+        :key="`${node.id}-connector-left`"
+        @mouseover="onConnectorMouseOver"
+        @mouseleave="onConnectorMouseLeave"
+        @mouseup="(e) => onConnectorMouseUp(e, connectors.left)"
+      />
+      <circle
+        v-if="connectors.right"
+        v-show="!isConnecting"
+        :id="`${node.id}-connector-right`"
+        :cx="connectors.right.x"
+        :cy="connectors.right.y"
+        r="4"
+        class="connector connector__hidden"
+        fill="black"
+        stroke="white"
+        :key="`${node.id}-connector-right`"
+        @mouseover="onConnectorMouseOver"
+        @mouseleave="onConnectorMouseLeave"
+        @mousedown="(e) => onConnectorClick(e, connectors.right)"
+        @mousemove="(e) => e.stopPropagation()"
+      />
+    </g>
   </g>
 </template>
 <script>
 import * as d3 from "d3";
+import ResizeFrame from "./reize-frame.vue";
+
 export default {
   computed: {
     connectors() {
@@ -79,12 +93,6 @@ export default {
 
       return { left, right };
     },
-    textX() {
-      return this.node.x + 10;
-    },
-    textY() {
-      return this.node.y + 5;
-    },
   },
   mounted() {
     var drag = d3
@@ -93,12 +101,20 @@ export default {
       .on("drag", this.onNodeDragged)
       .on("end", this.onNodeDragEnded);
 
-    d3.select(`[id='${this.node.id}'`)
+    d3.select(`[id='${this.node.id}-node'`)
       //   .on("mouseup", this.nodeMouseDown)
       //   .on("dblclick", this.nodeDblClick)
       .call(drag);
   },
   methods: {
+    onNodeFocus(e) {
+      e.stopPropagation();
+      this.$refs.resizeFrame.show();
+    },
+    onNodeFocusOut(e) {
+      e.stopPropagation();
+      this.$refs.resizeFrame.hide();
+    },
     onConnectorMouseOver(e) {
       d3.select(e.srcElement).attr("r", 6);
     },
@@ -129,20 +145,16 @@ export default {
       // d3.select("[id='" + d.id + "']").attr("stroke", null);
     },
   },
-  watch: {
-    transformation(transformation) {
-      if (!transformation) return;
-    },
-  },
+  watch: {},
   props: {
     node: {},
-    transformation: {
-      default: null,
-    },
     isConnecting: {
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    ResizeFrame,
   },
 };
 </script>

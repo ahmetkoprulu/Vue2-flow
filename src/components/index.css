@@ -105,3 +105,15 @@
 .node:hover > .connector__hidden {
   visibility: visible;
 }
+
+.node:focus {
+  outline: none;
+}
+
+.node__resize__nwse {
+  cursor: nwse-resize;
+}
+
+.node__resize__nesw {
+  cursor: nesw-resize;
+}
