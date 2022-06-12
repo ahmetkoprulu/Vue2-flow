@@ -39,13 +39,13 @@
       <!-- Connectors -->
       <circle
         v-if="connectors.left"
-        v-show="isConnecting"
+        v-show="shouldDisplayRecieverConnector"
         :id="`${node.id}-connector-left`"
         :cx="connectors.left.x"
         :cy="connectors.left.y"
-        r="4"
+        r="7"
         class="connector"
-        fill="black"
+        fill="#1D4ED8"
         stroke="white"
         :key="`${node.id}-connector-left`"
         @mouseover="onConnectorMouseOver"
@@ -54,13 +54,14 @@
       />
       <circle
         v-if="connectors.right"
-        v-show="!isConnecting"
+        v-show="!connectingInfo.source && showConnector"
         :id="`${node.id}-connector-right`"
         :cx="connectors.right.x"
         :cy="connectors.right.y"
-        r="4"
-        class="connector connector__hidden"
-        fill="black"
+        r="7"
+        class="connector"
+        style="position: absolute"
+        fill="#1D4ED8"
         stroke="white"
         :key="`${node.id}-connector-right`"
         @mouseover="onConnectorMouseOver"
@@ -76,15 +77,20 @@ import * as d3 from "d3";
 import ResizeFrame from "./reize-frame.vue";
 
 export default {
+  data() {
+    return {
+      showConnector: false,
+    };
+  },
   computed: {
     connectors() {
       const halfWidth = this.node.width / 2;
       const halfHeight = this.node.height / 2;
       // let top = { x: node.x + halfWidth, y: node.y - 10 };
-      let left = { x: this.node.x, y: this.node.y + halfHeight };
+      let left = { x: this.node.x - 20, y: this.node.y + halfHeight };
       // let bottom = { x: node.x + halfWidth, y: node.y + node.height + 10 };
       let right = {
-        x: this.node.x + this.node.width,
+        x: this.node.x + this.node.width + 20,
         y: this.node.y + halfHeight,
       };
 
@@ -92,6 +98,12 @@ export default {
       else if (this.node.type == "output") return { left };
 
       return { left, right };
+    },
+    shouldDisplayRecieverConnector() {
+      return (
+        this.connectingInfo.source &&
+        this.connectingInfo.source.id != this.node.id
+      );
     },
   },
   mounted() {
@@ -101,25 +113,24 @@ export default {
       .on("drag", this.onNodeDragged)
       .on("end", this.onNodeDragEnded);
 
-    d3.select(`[id='${this.node.id}-node'`)
-      //   .on("mouseup", this.nodeMouseDown)
-      //   .on("dblclick", this.nodeDblClick)
-      .call(drag);
+    d3.select(`[id='${this.node.id}-node'`).call(drag);
   },
   methods: {
     onNodeFocus(e) {
       e.stopPropagation();
       this.$refs.resizeFrame.show();
+      this.showConnector = true;
     },
     onNodeFocusOut(e) {
       e.stopPropagation();
       this.$refs.resizeFrame.hide();
+      this.showConnector = false;
     },
     onConnectorMouseOver(e) {
-      d3.select(e.srcElement).attr("r", 6);
+      d3.select(e.srcElement).attr("r", 10);
     },
     onConnectorMouseLeave(e) {
-      d3.select(e.srcElement).attr("r", 4);
+      d3.select(e.srcElement).attr("r", 7);
     },
     onConnectorClick(e, c) {
       e.stopPropagation();
@@ -134,23 +145,16 @@ export default {
       if (this.connecting) return;
       this.node.x += e.dx;
       this.node.y += e.dy;
-      // d3.select("[id='" + this.node.id + "']").attr(
-      //   "transform",
-      //   "translate(" + e.dx + "," + e.dy + ")"
-      // );
     },
     onNodeDragEnded(e) {
       if (this.connecting) return;
-
-      // d3.select("[id='" + d.id + "']").attr("stroke", null);
     },
   },
   watch: {},
   props: {
     node: {},
-    isConnecting: {
-      type: Boolean,
-      default: false,
+    connectingInfo: {
+      type: Object,
     },
   },
   components: {

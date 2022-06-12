@@ -10,19 +10,6 @@
       @click="$emit('chart-click', $event)"
     >
       <Background :width="960" :height="500" :transformation="transformation" />
-      <g id="nodes">
-        <Node
-          :node="n"
-          :transformation="transformation"
-          :is-connecting="connecting"
-          @connecting="onConnecting"
-          @connected="onConnected"
-          @click="$emit('node-click', $event)"
-          @contextmenu="$emit('node-contextmenu', $event)"
-          v-for="n in nodes"
-          :key="n.id"
-        />
-      </g>
       <g id="connections">
         <ConnectionMarkerRenderer :connections="connectionMarkers" />
         <ConnectionWrapper
@@ -33,6 +20,21 @@
           @contextmenu="$emit('connection-contextmenu', $event)"
         />
       </g>
+
+      <g id="nodes">
+        <Node
+          :node="n"
+          :transformation="transformation"
+          :connecting-info="connectingInfo"
+          @connecting="onConnecting"
+          @connected="onConnected"
+          @click="$emit('node-click', $event)"
+          @contextmenu="$emit('node-contextmenu', $event)"
+          v-for="n in nodes"
+          :key="n.id"
+        />
+      </g>
+
       <ConnectionLine :info="connectingInfo" v-show="connecting" />
     </svg>
     <div class="chart__footer" :style="footerStyle">
@@ -123,7 +125,6 @@ export default {
       d3.select("g#nodes").attr("transform", e.transform);
       d3.select("g#connections").attr("transform", e.transform);
       d3.select("g#connection-line").attr("transform", e.transform);
-      console.log(this.nodes);
     },
     getRelativeCursorPosition(e) {
       let boundingClientRect = e.currentTarget.getBoundingClientRect();
@@ -156,7 +157,10 @@ export default {
           conn.source.id == this.connectingInfo.source.id &&
           conn.destination.id == n.id
       );
-      if (existConnection) return;
+      if (existConnection) {
+        this.resetConnectingInfo();
+        return;
+      }
 
       this.connections.push({
         id: uuidv4(),
@@ -168,7 +172,7 @@ export default {
         type: "bezier",
       });
 
-      console.log(this.includedConnection);
+      this.resetConnectingInfo();
     },
     onChartMouseMove(e) {
       if (!this.connecting) {
@@ -184,14 +188,19 @@ export default {
         this.$emit("chart-mouseup");
         return;
       }
-
+      this.resetConnectingInfo();
+      this.connecting = false;
+    },
+    generateId() {
+      return uuidv4();
+    },
+    resetConnectingInfo() {
       this.connectingInfo = {
         source: null,
         sourcePosition: null,
         destination: null,
         destinationPosition: null,
       };
-      this.connecting = false;
     },
   },
   watch: {
