@@ -2,10 +2,10 @@
   <g
     :id="node.id"
     class="node"
-    @click="$emit('click', node)"
-    @contextmenu.prevent="$emit('contextmenu', node)"
+    @click="$emit('click', $event)"
+    @contextmenu.prevent="$emit('contextmenu', $event, node)"
     @focus="onNodeFocus"
-    @blur="onNodeFocusOut"
+    @blur="onNodeBlur"
   >
     <!-- Resize Frame -->
     <ResizeFrame ref="resizeFrame" :node="node" />
@@ -45,7 +45,8 @@
         :cy="connectors.left.y"
         r="7"
         class="connector"
-        fill="#1D4ED8"
+        fill="#18A0FB"
+        opacity="0.7"
         stroke="white"
         :key="`${node.id}-connector-left`"
         @mouseover="onConnectorMouseOver"
@@ -61,7 +62,8 @@
         r="7"
         class="connector"
         style="position: absolute"
-        fill="#1D4ED8"
+        fill="#18A0FB"
+        opacity="0.7"
         stroke="white"
         :key="`${node.id}-connector-right`"
         @mouseover="onConnectorMouseOver"
@@ -120,11 +122,13 @@ export default {
       e.stopPropagation();
       this.$refs.resizeFrame.show();
       this.showConnector = true;
+      this.$emit("focus", this.node);
     },
-    onNodeFocusOut(e) {
+    onNodeBlur(e) {
       e.stopPropagation();
       this.$refs.resizeFrame.hide();
       this.showConnector = false;
+      this.$emit("blur", this.node);
     },
     onConnectorMouseOver(e) {
       d3.select(e.srcElement).attr("r", 10);
@@ -140,7 +144,9 @@ export default {
     onConnectorMouseUp(e, c) {
       this.$emit("connected", e, this.node, c);
     },
-    onNodeDragStarted(_) {},
+    onNodeDragStarted(e) {
+      this.$emit("node-dragstart", this.node);
+    },
     onNodeDragged(e) {
       if (this.connecting) return;
       this.node.x += e.dx;

@@ -1,12 +1,14 @@
 <template>
   <g
     :id="conn.id"
-    class="chart__connection"
+    class="connection"
     :class="{
       selected: conn.selected,
       animated: conn.animated,
     }"
-    @click="$emit('click', $event, conn)"
+    @click="$emit('click', conn)"
+    @focus="$emit('focus', conn)"
+    @blur="$emit('blur', conn)"
     @contextmenu.prevent="$emit('contextmenu', $event, conn)"
   >
     <component
@@ -56,3 +58,5 @@ export default {
   },
 };
 </script>
+
+<style src="../index.css"></style>

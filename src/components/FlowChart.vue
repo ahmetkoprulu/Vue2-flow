@@ -14,10 +14,12 @@
         <ConnectionMarkerRenderer :connections="connectionMarkers" />
         <ConnectionWrapper
           :conn="conn"
+          @click.stop="$emit('connection-click', $event)"
+          @contextmenu.stop="onConnContextMenu"
+          @focus="onConnFocus"
+          @blur="onConnBlur"
           v-for="conn in includedConnection"
           :key="conn.id"
-          @click="$emit('connection-click', $event)"
-          @contextmenu="$emit('connection-contextmenu', $event)"
         />
       </g>
 
@@ -28,15 +30,57 @@
           :connecting-info="connectingInfo"
           @connecting="onConnecting"
           @connected="onConnected"
-          @click="$emit('node-click', $event)"
-          @contextmenu="$emit('node-contextmenu', $event)"
+          @click.stop="$emit('node-click', $event)"
+          @contextmenu.stop="onNodeContextMenu"
+          @focus="onNodeFocus"
+          @blur="onNodeBlur"
+          @node-dragstart="onNodeDragStart"
           v-for="n in nodes"
           :key="n.id"
         />
       </g>
-
       <ConnectionLine :info="connectingInfo" v-show="connecting" />
+      <g
+        id="node-contextmenu"
+        @click.stop=""
+        v-show="enableNodeContextMenu && selectedNode && showNodeContextMenu"
+      >
+        <foreignObject
+          :x="nodeContextMenuPosition.x"
+          :y="nodeContextMenuPosition.y"
+          v-if="enableNodeContextMenu && selectedNode && showNodeContextMenu"
+          class="node__contextmenu"
+          width="1"
+          height="1"
+        >
+          <slot name="nodeContextmenu" />
+        </foreignObject>
+      </g>
+      <g
+        id="connection-contextmenu"
+        @click.stop=""
+        v-show="
+          enableConnContextMenu && selectedConnection && showConnContextMenu
+        "
+      >
+        <foreignObject
+          :x="connContextMenuPosition.x"
+          :y="connContextMenuPosition.y"
+          v-if="
+            enableConnContextMenu && selectedConnection && showConnContextMenu
+          "
+          class="connection__contextmenu"
+          width="1"
+          height="1"
+        >
+          <slot name="connContextmenu" />
+        </foreignObject>
+      </g>
     </svg>
+    <div></div>
+    <!-- <div id="chart-contextmenu" class="chart__contextmenu">
+      <slot name="contextmenu" />
+    </div> -->
     <div class="chart__footer" :style="footerStyle">
       <slot name="footer" />
     </div>
@@ -65,6 +109,9 @@ export default {
         destinationPosition: null,
       },
       selectedNode: null,
+      selectedConnection: null,
+      showNodeContextMenu: false,
+      showConnContextMenu: false,
       transformation: null,
     };
   },
@@ -97,27 +144,63 @@ export default {
     connectionMarkers() {
       return this.connections.filter((conn) => conn.markerEnd);
     },
+    nodeContextMenuPosition() {
+      if (!this.enableNodeContextMenu) return { x: 0, y: 0 };
+      if (!this.selectedNode) return { x: 0, y: 0 };
+
+      return {
+        x: this.nodeContextMenuX(this.selectedNode),
+        y: this.nodeContextMenuY(this.selectedNode),
+      };
+    },
+    connContextMenuPosition() {
+      if (!this.enableConnContextMenu) return { x: 0, y: 0 };
+      if (!this.selectedConnection) return { x: 0, y: 0 };
+
+      return {
+        x: this.connContextMenuX(this.selectedConnection),
+        y: this.connContextMenuY(this.selectedConnection),
+      };
+    },
   },
   mounted() {
     this.svg = d3.select("svg");
 
     var zoom = d3.zoom().on("zoom", this.onZoomed);
     this.svg
-      .on("mousedown", () => (this.selectedNode = null))
+      .on("click", () => {
+        this.selectedNode = null;
+        this.showNodeContextMenu = false;
+        this.selectedConnection = null;
+        this.showNodeContextMenu = false;
+      })
       .on("wheel", this.wheeled);
+
     this.svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
   },
   methods: {
-    addNode() {
+    addNode({
+      id = undefined,
+      name = "New Step",
+      type = "step",
+      x = 0,
+      y = 0,
+    }) {
+      if (!id) id = uuidv4();
+
+      // Stroke: #D1D5DB
+      // Bg Color: #FFF
+      // Color: #000
+      // width: 120,
+      // height: 50,
+      // shape: "rect"
+
       this.nodes.push({
-        id: uuidv4(),
-        x: 0,
-        y: 0,
-        width: 120,
-        height: 50,
-        name: "New",
-        type: "start",
-        shape: "rect",
+        id: id,
+        name: name,
+        type: type,
+        x: x,
+        y: y,
       });
     },
     onZoomed(e) {
@@ -125,6 +208,8 @@ export default {
       d3.select("g#nodes").attr("transform", e.transform);
       d3.select("g#connections").attr("transform", e.transform);
       d3.select("g#connection-line").attr("transform", e.transform);
+      d3.select("g#node-contextmenu").attr("transform", e.transform);
+      d3.select("g#connection-contextmenu").attr("transform", e.transform);
     },
     getRelativeCursorPosition(e) {
       let boundingClientRect = e.currentTarget.getBoundingClientRect();
@@ -162,6 +247,11 @@ export default {
         return;
       }
 
+      // if (!this.validateConn && !this.validateConn(this.connectingInfo)) {
+      //   this.resetConnectingInfo();
+      //   return;
+      // }
+
       this.connections.push({
         id: uuidv4(),
         source: {
@@ -176,7 +266,7 @@ export default {
     },
     onChartMouseMove(e) {
       if (!this.connecting) {
-        this.$emit("chart-mousemove");
+        // this.$emit("chart-mousemove");
         return;
       }
 
@@ -191,6 +281,40 @@ export default {
       this.resetConnectingInfo();
       this.connecting = false;
     },
+    onNodeFocus(node) {
+      this.selectedNode = node;
+      this.showNodeContextMenu = false;
+      this.$emit("node-focus", node);
+    },
+    onNodeBlur(node) {
+      this.$emit("node-blur", node);
+    },
+    onNodeDragStart(node) {
+      this.showNodeContextMenu = false;
+      this.$emit("node-dragstart", node);
+    },
+    onNodeContextMenu(e, node) {
+      this.showNodeContextMenu = true;
+      this.selectedNode = node;
+      console.log(this.showNodeContextMenu, this.selectedNode);
+      this.$emit("node-contextmenu", node);
+    },
+    onConnFocus(conn) {
+      this.selectedConnection = conn;
+      this.showNodeContextMenu = false;
+      this.$emit("connection-focus", conn);
+    },
+    onConnBlur(conn) {
+      this.showConnContextMenu = false;
+      this.selectedConnection = null;
+
+      this.$emit("connection-blur", conn);
+    },
+    onConnContextMenu(conn) {
+      this.showConnContextMenu = true;
+      console.log(this.selectedConnection, this.showConnContextMenu);
+      this.$emit("connection-contextmenu", conn);
+    },
     generateId() {
       return uuidv4();
     },
@@ -203,30 +327,57 @@ export default {
       };
     },
   },
-  watch: {
-    selectedNode(n, o) {
-      if (n) {
-      }
-
-      if (o) {
-      }
-    },
-    // nodes: {
-    //   deep: true,
-    //   handler: function (n) {
-    //     console.log("sa");
-    //     this.renderNodes();
-    //   },
-    // },
-  },
   props: {
     width: { type: [String, Number], default: "100%" },
     height: { type: [String, Number], default: "500px" },
-    nodes: { type: Array, default: () => [] },
+    nodes: {
+      type: Array,
+      default: () => [
+        {
+          id: 1,
+          name: "Start",
+          type: "start",
+          x: 100,
+          y: 100,
+        },
+        {
+          id: 2,
+          name: "End",
+          type: "end",
+          x: 100,
+          y: 400,
+        },
+      ],
+    },
     connections: { type: Array, default: () => [] },
     canvasWidth: { type: [String, Number], default: "1000px" },
     canvasHeight: { type: [String, Number], default: "1000px" },
     footerStyle: { type: Object, default: () => {} },
+    enableNodeContextMenu: { type: Boolean, default: false },
+    nodeContextMenuX: {
+      type: Function,
+      default: (node) => node.x,
+    },
+    nodeContextMenuY: {
+      type: Function,
+      default: (node) => node.y - 76,
+    },
+    enableConnContextMenu: { type: Boolean, default: false },
+    connContextMenuX: {
+      type: Function,
+      default: (conn) => {
+        console.log(conn.source.x + (conn.destination.x - conn.source.x) / 2);
+        return (
+          conn.source.x +
+          conn.source.width +
+          (conn.destination.x - conn.source.x) / 2
+        );
+      },
+    },
+    connContextMenuY: {
+      type: Function,
+      default: (conn) => conn.source.y - 20,
+    },
   },
   components: {
     Background,
