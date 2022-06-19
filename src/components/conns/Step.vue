@@ -3,6 +3,8 @@
     :id="`${conn.id}-line`"
     class="chart__connection-path"
     :d="path"
+    :stroke="borderColor"
+    :stroke-width="borderWidth"
     :marker-end="`url(#${conn.markerEnd || ''})`"
   />
 </template>
@@ -30,6 +32,8 @@ export default {
     sourceY: {},
     destX: {},
     destY: {},
+    borderColor: { type: String },
+    borderWidth: { type: String },
   },
 };
 </script>

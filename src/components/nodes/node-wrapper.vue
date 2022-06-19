@@ -14,15 +14,13 @@
       <!-- Node -->
       <rect
         :id="`${node.id}-shape`"
-        rx="5"
-        ry="5"
         :x="node.x"
         :y="node.y"
         :width="node.width"
         :height="node.height"
-        fill="white"
-        stroke="black"
-        stroke-width="1px"
+        :fill="backgroundColor"
+        :stroke="borderColor"
+        :stroke-width="borderWidth"
       >
       </rect>
 
@@ -33,7 +31,9 @@
         :width="node.width - 10"
         :height="node.height - 10"
       >
-        <span class="node__content">{{ node.name }}</span>
+        <span class="node__content" :style="{ color: color }">
+          {{ node.name }}
+        </span>
       </foreignObject>
 
       <!-- Connectors -->
@@ -106,6 +106,26 @@ export default {
         this.connectingInfo.source &&
         this.connectingInfo.source.id != this.node.id
       );
+    },
+    borderWidth() {
+      if (!this.node.style || !this.node.style.borderWidth) return "1px";
+
+      return this.node.style.borderWidth;
+    },
+    borderColor() {
+      if (!this.node.style || !this.node.style.borderColor) return "black";
+
+      return this.node.style.borderColor;
+    },
+    backgroundColor() {
+      if (!this.node.style || !this.node.style.backgroundColor) return "white";
+
+      return this.node.style.backgroundColor;
+    },
+    color() {
+      if (!this.node.style || !this.node.style.color) return "black";
+
+      return this.node.style.color;
     },
   },
   mounted() {

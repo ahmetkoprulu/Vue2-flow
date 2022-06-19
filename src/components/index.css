@@ -16,6 +16,10 @@
   right: 4px;
 }
 
+*:focus {
+  outline: none;
+}
+
 .chart__container {
   position: relative;
   left: 0;
@@ -37,8 +41,10 @@
 
 .chart__connection-path {
   fill: none;
-  stroke: #b1b1b7;
-  stroke-width: 2;
+}
+
+.chart__connection-line-path {
+  fill: none;
 }
 
 .chart__connection-text {

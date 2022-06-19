@@ -1,14 +1,13 @@
 <template>
   <g
     :id="conn.id"
-    class="connection"
+    class="chart__connection"
     :class="{
-      selected: conn.selected,
-      animated: conn.animated,
+      animated: animated,
     }"
-    @click="$emit('click', conn)"
-    @focus="$emit('focus', conn)"
-    @blur="$emit('blur', conn)"
+    @click.stop="$emit('click', conn)"
+    @focus.stop="$emit('focus', conn)"
+    @blur.stop="$emit('blur', conn)"
     @contextmenu.prevent="$emit('contextmenu', $event, conn)"
   >
     <component
@@ -19,6 +18,8 @@
         sourceY: sourceConnectorY,
         destX: destConnectorX,
         destY: destConnectorY,
+        borderColor: borderColor,
+        borderWidth: borderWidth,
       }"
     />
     <ConnectionText v-if="conn.text" />
@@ -43,6 +44,21 @@ export default {
     },
     destConnectorY() {
       return this.conn.destination.y + this.conn.destination.height / 2;
+    },
+    borderColor() {
+      if (!this.conn.style || !this.conn.style.borderColor) return "#b1b1b7";
+
+      return this.conn.style.borderColor;
+    },
+    borderWidth() {
+      if (!this.conn.style || !this.conn.style.borderWidth) return "2px";
+
+      return this.conn.style.borderWidth;
+    },
+    animated() {
+      if (!this.conn.style || !this.conn.style.animated) return false;
+
+      return this.conn.style.animated;
     },
   },
   props: {

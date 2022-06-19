@@ -14,7 +14,7 @@
         <ConnectionMarkerRenderer :connections="connectionMarkers" />
         <ConnectionWrapper
           :conn="conn"
-          @click.stop="$emit('connection-click', $event)"
+          @click="$emit('connection-click', $event)"
           @contextmenu.stop="onConnContextMenu"
           @focus="onConnFocus"
           @blur="onConnBlur"
@@ -39,7 +39,13 @@
           :key="n.id"
         />
       </g>
-      <ConnectionLine :info="connectingInfo" v-show="connecting" />
+      <ConnectionLine
+        :info="connectingInfo"
+        :type="connLineType"
+        :borderColor="connLineBorderColor"
+        :borderWidth="connLineBorderWidth"
+        v-show="connecting"
+      />
       <g
         id="node-contextmenu"
         @click.stop=""
@@ -259,7 +265,11 @@ export default {
           position: this.connectingInfo.sourcePosition.side,
         },
         destination: { id: n.id, position: "left" },
-        type: "bezier",
+        type: this.connLineType,
+        style: {
+          borderColor: this.connLineBorderColor,
+          borderWidth: this.connLineBorderWidth,
+        },
       });
 
       this.resetConnectingInfo();
@@ -296,7 +306,6 @@ export default {
     onNodeContextMenu(e, node) {
       this.showNodeContextMenu = true;
       this.selectedNode = node;
-      console.log(this.showNodeContextMenu, this.selectedNode);
       this.$emit("node-contextmenu", node);
     },
     onConnFocus(conn) {
@@ -312,7 +321,6 @@ export default {
     },
     onConnContextMenu(conn) {
       this.showConnContextMenu = true;
-      console.log(this.selectedConnection, this.showConnContextMenu);
       this.$emit("connection-contextmenu", conn);
     },
     generateId() {
@@ -350,13 +358,14 @@ export default {
       ],
     },
     connections: { type: Array, default: () => [] },
-    canvasWidth: { type: [String, Number], default: "1000px" },
-    canvasHeight: { type: [String, Number], default: "1000px" },
+    connLineType: { type: String, default: "bezier" },
+    connLineBorderWidth: { type: String, default: "2px" },
+    connLineBorderColor: { type: String, default: "#b1b1b7" },
     footerStyle: { type: Object, default: () => {} },
     enableNodeContextMenu: { type: Boolean, default: false },
     nodeContextMenuX: {
       type: Function,
-      default: (node) => node.x,
+      default: (node) => node.x - 115,
     },
     nodeContextMenuY: {
       type: Function,
@@ -366,7 +375,6 @@ export default {
     connContextMenuX: {
       type: Function,
       default: (conn) => {
-        console.log(conn.source.x + (conn.destination.x - conn.source.x) / 2);
         return (
           conn.source.x +
           conn.source.width +
