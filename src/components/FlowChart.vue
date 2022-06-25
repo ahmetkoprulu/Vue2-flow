@@ -248,11 +248,12 @@ export default {
           conn.source.id == this.connectingInfo.source.id &&
           conn.destination.id == n.id
       );
+      console.log(existConnection);
       if (existConnection) {
         this.resetConnectingInfo();
         return;
       }
-
+      console.log("sa");
       // if (!this.validateConn && !this.validateConn(this.connectingInfo)) {
       //   this.resetConnectingInfo();
       //   return;
