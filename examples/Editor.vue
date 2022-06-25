@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <Chart
-      @connection-click="onConnectionClicked"
-      @node-click="onConnectionClicked"
-      @node-contextmenu="onConnectionClicked"
+      ref="flowChart"
       :nodes="nodes"
       :connections="connections"
       :footer-style="{ 'margin-left': '35%' }"
       :enableConnContextMenu="true"
       :enableNodeContextMenu="true"
-      :connLineBorderColor="'green'"
-      :connLineType="'step'"
     >
-      <div slot="nodeContextmenu" class="context__container d-inline-flex">
-        <div class="context__button-2">
+      <div
+        slot="nodeContextmenu"
+        slot-scope="props"
+        class="context__container d-inline-flex"
+      >
+        <div class="context__button">
           <a href="javascript:;" class="context__link my-auto d-inline-flex">
             <i class="bi bi-circle-fill bg-white"></i
             ><i class="bi bi-caret-down"></i>
@@ -34,7 +34,10 @@
             <option selected>Small</option>
           </select>
         </div>
-        <div class="context__button-2">
+        <div
+          class="context__button-2"
+          @click="$refs.flowChart.removeNode(props.node.id)"
+        >
           <a href="javascript:;" class="context__link">
             <i class="bi bi-trash3"></i>
           </a>
@@ -42,7 +45,33 @@
       </div>
       <div slot="connContextmenu" class="context__container"></div>
 
-      <div class="w-100" slot="footer"><div class="toolbar"></div></div>
+      <div class="toolbar" slot="footer">
+        <div class="context__button">
+          <a href="javascript:;" class="context__link">
+            <i class="bi bi-cursor"></i>
+          </a>
+        </div>
+        <div class="context__button">
+          <a href="javascript:;" class="context__link">
+            <i class="bi bi-hand-index-thumb"></i>
+          </a>
+        </div>
+        <div class="context__button" @click="$refs.flowChart.addNode()">
+          <a href="javascript:;" class="context__link">
+            <i class="bi bi-plus-lg"></i>
+          </a>
+        </div>
+        <div class="context__button">
+          <a href="javascript:;" class="context__link">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </a>
+        </div>
+        <div class="context__button">
+          <a href="javascript:;" class="context__link">
+            <i class="bi bi-arrow-clockwise"></i>
+          </a>
+        </div>
+      </div>
     </Chart>
   </div>
 </template>
@@ -64,9 +93,9 @@ export default {
           type: "input",
           shape: "rect",
           style: {
-            backgroundColor: "orange",
-            color: "purple",
-            borderColor: "purple",
+            backgroundColor: "lightgreen",
+            color: "green",
+            borderColor: "green",
             borderWidth: "3px",
           },
         },
@@ -79,6 +108,12 @@ export default {
           name: "End",
           type: "output",
           shape: "rect",
+          style: {
+            backgroundColor: "lightcoral",
+            color: "red",
+            borderColor: "red",
+            borderWidth: "3px",
+          },
         },
         {
           id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
@@ -86,8 +121,8 @@ export default {
           y: 73,
           width: 120,
           height: 50,
-          name: "IK Onay",
-          type: "start",
+          name: "Step 1",
+          type: "io",
           shape: "rect",
         },
         {
@@ -96,8 +131,8 @@ export default {
           y: 339,
           width: 120,
           height: 50,
-          name: "Yonetici Onayasda",
-          type: "start",
+          name: "Step 2",
+          type: "io",
           shape: "rect",
         },
         {
@@ -106,8 +141,8 @@ export default {
           y: 338,
           width: 120,
           height: 50,
-          name: "Son Onay",
-          type: "start",
+          name: "Step 3",
+          type: "io",
           shape: "rect",
         },
       ],
@@ -125,7 +160,6 @@ export default {
           type: "bezier",
           style: {
             animated: true,
-            borderColor: "cyan",
             borderWidth: "3px",
           },
           markerEnd: "arrow",
@@ -168,7 +202,7 @@ export default {
           },
           type: "smoothstep",
           style: {
-            borderColor: "red",
+            borderColor: "lightblue",
           },
         },
         {
@@ -182,16 +216,12 @@ export default {
             position: "left",
           },
           type: "step",
-          style: {
-            borderColor: "blue",
-          },
+          style: {},
         },
       ],
     };
   },
-  methods: {
-    onConnectionClicked(conn) {},
-  },
+  methods: {},
   components: {
     Chart,
   },
@@ -200,14 +230,19 @@ export default {
 
 <style>
 .toolbar {
-  width: 400px;
   height: 50px;
-  border: 1px solid #ccc;
-  background-color: white;
+
   display: flex;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 20px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+
+  background: #ffffff;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
 }
 
 .context__container {
