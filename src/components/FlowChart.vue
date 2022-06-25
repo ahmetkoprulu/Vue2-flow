@@ -1,7 +1,7 @@
 <template>
   <div class="chart__container">
     <svg
-      id="chart"
+      class="chart__self"
       :width="width"
       :height="height"
       @mousemove="onChartMouseMove"
@@ -59,7 +59,7 @@
           width="1"
           height="1"
         >
-          <slot name="nodeContextmenu" />
+          <slot name="nodeContextmenu" :node="selectedNode" />
         </foreignObject>
       </g>
       <g
@@ -79,14 +79,11 @@
           width="1"
           height="1"
         >
-          <slot name="connContextmenu" />
+          <slot name="connContextmenu" :conn="selectedConnection" />
         </foreignObject>
       </g>
     </svg>
     <div></div>
-    <!-- <div id="chart-contextmenu" class="chart__contextmenu">
-      <slot name="contextmenu" />
-    </div> -->
     <div class="chart__footer" :style="footerStyle">
       <slot name="footer" />
     </div>
@@ -185,21 +182,16 @@ export default {
     this.svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
   },
   methods: {
-    addNode({
+    addNode(
       id = undefined,
       name = "New Step",
-      type = "step",
+      type = "io",
       x = 0,
       y = 0,
-    }) {
+      width = 100,
+      height = 50
+    ) {
       if (!id) id = uuidv4();
-
-      // Stroke: #D1D5DB
-      // Bg Color: #FFF
-      // Color: #000
-      // width: 120,
-      // height: 50,
-      // shape: "rect"
 
       this.nodes.push({
         id: id,
@@ -207,7 +199,34 @@ export default {
         type: type,
         x: x,
         y: y,
+        width: width,
+        height: height,
       });
+    },
+    removeNode(id) {
+      this.removeConnsOfNode(id);
+      console.log(id);
+      const i = this.nodes.findIndex((x) => x.id == id);
+      this.nodes.splice(i, 1);
+      this.selectedNode = null;
+    },
+    removeConnsOfNode(id) {
+      let connsToDelete = this.connections.filter((x) => {
+        x.source.id != id || x.destination.id != id;
+      });
+
+      connsToDelete.forEach((x) => {});
+    },
+    removeConn(id) {
+      const i = this.connections.findIndex((x) => x.id == id);
+      this.connections.splice(i, 1);
+      this.selectedConnection = null;
+    },
+    getNodes() {
+      return this.nodes;
+    },
+    getConnections() {
+      return this.connections;
     },
     onZoomed(e) {
       this.transformation = e.transform;
@@ -248,12 +267,12 @@ export default {
           conn.source.id == this.connectingInfo.source.id &&
           conn.destination.id == n.id
       );
-      console.log(existConnection);
+
       if (existConnection) {
         this.resetConnectingInfo();
         return;
       }
-      console.log("sa");
+
       // if (!this.validateConn && !this.validateConn(this.connectingInfo)) {
       //   this.resetConnectingInfo();
       //   return;
@@ -345,14 +364,14 @@ export default {
         {
           id: 1,
           name: "Start",
-          type: "start",
+          type: "input",
           x: 100,
           y: 100,
         },
         {
           id: 2,
           name: "End",
-          type: "end",
+          type: "output",
           x: 100,
           y: 400,
         },
