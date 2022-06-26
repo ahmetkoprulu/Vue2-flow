@@ -9,12 +9,16 @@
       @contextmenu.prevent="$emit('chart-contextmenu', $event)"
       @click="$emit('chart-click', $event)"
     >
-      <Background :width="960" :height="500" :transformation="transformation" />
+      <Background
+        :width="960"
+        :height="500"
+        :transformation="d3Transformation"
+      />
       <g id="connections">
         <ConnectionMarkerRenderer :connections="connectionMarkers" />
         <ConnectionWrapper
           :conn="conn"
-          @click="$emit('connection-click', $event)"
+          @click="$emit('connection-click', conn)"
           @contextmenu.stop="onConnContextMenu"
           @focus="onConnFocus"
           @blur="onConnBlur"
@@ -26,11 +30,11 @@
       <g id="nodes">
         <Node
           :node="n"
-          :transformation="transformation"
+          :transformation="d3Transformation"
           :connecting-info="connectingInfo"
           @connecting="onConnecting"
           @connected="onConnected"
-          @click.stop="$emit('node-click', $event)"
+          @click.stop="$emit('node-click', n)"
           @contextmenu.stop="onNodeContextMenu"
           @focus="onNodeFocus"
           @blur="onNodeBlur"
@@ -115,7 +119,7 @@ export default {
       selectedConnection: null,
       showNodeContextMenu: false,
       showConnContextMenu: false,
-      transformation: null,
+      d3Transformation: null,
     };
   },
   computed: {
@@ -179,7 +183,11 @@ export default {
       })
       .on("wheel", this.wheeled);
 
-    this.svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+    this.d3Transformation = d3.zoomIdentity
+      .translate(this.transformation.x, this.transformation.y)
+      .scale(this.transformation.k);
+
+    this.svg.call(zoom).call(zoom.transform, this.d3Transformation);
   },
   methods: {
     addNode(
@@ -189,7 +197,8 @@ export default {
       x = 0,
       y = 0,
       width = 100,
-      height = 50
+      height = 50,
+      style = null
     ) {
       if (!id) id = uuidv4();
 
@@ -201,6 +210,7 @@ export default {
         y: y,
         width: width,
         height: height,
+        style: style,
       });
     },
     removeNode(id) {
@@ -228,14 +238,6 @@ export default {
     getConnections() {
       return this.connections;
     },
-    onZoomed(e) {
-      this.transformation = e.transform;
-      d3.select("g#nodes").attr("transform", e.transform);
-      d3.select("g#connections").attr("transform", e.transform);
-      d3.select("g#connection-line").attr("transform", e.transform);
-      d3.select("g#node-contextmenu").attr("transform", e.transform);
-      d3.select("g#connection-contextmenu").attr("transform", e.transform);
-    },
     getRelativeCursorPosition(e) {
       let boundingClientRect = e.currentTarget.getBoundingClientRect();
       let actualX = e.pageX - boundingClientRect.left - window.scrollX;
@@ -244,6 +246,18 @@ export default {
       var y = (actualY - this.transformation.y) / this.transformation.k;
 
       return { x: Math.trunc(x), y: Math.trunc(y) };
+    },
+    onZoomed(e) {
+      this.d3Transformation = e.transform;
+      this.transformation.k = e.transform.k;
+      this.transformation.x = e.transform.x;
+      this.transformation.y = e.transform.y;
+
+      d3.select("g#nodes").attr("transform", e.transform);
+      d3.select("g#connections").attr("transform", e.transform);
+      d3.select("g#connection-line").attr("transform", e.transform);
+      d3.select("g#node-contextmenu").attr("transform", e.transform);
+      d3.select("g#connection-contextmenu").attr("transform", e.transform);
     },
     onConnecting(e, n, c) {
       this.connecting = true;
@@ -378,6 +392,12 @@ export default {
       ],
     },
     connections: { type: Array, default: () => [] },
+    transformation: {
+      type: Object,
+      default() {
+        return { k: 1, x: 0, y: 0 };
+      },
+    },
     connLineType: { type: String, default: "bezier" },
     connLineBorderWidth: { type: String, default: "2px" },
     connLineBorderColor: { type: String, default: "#b1b1b7" },
