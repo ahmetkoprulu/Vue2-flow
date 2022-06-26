@@ -129,6 +129,7 @@ Do not hesitate to create issues about bugs and ideas.
 
 - Tests\*\*\*
 - Readonly mode
+- Connection texts
 - Shapes
 - Component based nodes
 - Improve connection paths
