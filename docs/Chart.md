@@ -8,7 +8,7 @@ Chart is the main component that renders nodes, connections, contextmenus, etc.
 | --------------------- | ------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------ |
 | width                 | Width of the canvas                   | String                      | 100%                                                                                 |
 | height                | Height of the canvas                  | String                      | 100%                                                                                 |
-| nodes                 | Node objects to be rendered           | Array of node objects       | Array of one input and one output node                                               |
+| nodes                 | Node objects to be rendered           | Array of node objects       | Empty Array                                                                          |
 | connections           | Connection objects to be rendered     | Array of connection objects | Empty array                                                                          |
 | transformation        | d3 zoom and pan object                | transformation object       | {k:1, x: 0, y: 0}                                                                    |
 | connLineType          | Type of ghost connection line         | String                      | bezier                                                                               |

@@ -374,22 +374,7 @@ export default {
     height: { type: [String, Number], default: "500px" },
     nodes: {
       type: Array,
-      default: () => [
-        {
-          id: 1,
-          name: "Start",
-          type: "input",
-          x: 100,
-          y: 100,
-        },
-        {
-          id: 2,
-          name: "End",
-          type: "output",
-          x: 100,
-          y: 400,
-        },
-      ],
+      default: () => [],
     },
     connections: { type: Array, default: () => [] },
     transformation: {
