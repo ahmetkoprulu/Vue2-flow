@@ -26,7 +26,13 @@
           :key="conn.id"
         />
       </g>
-
+      <ConnectionLine
+        :info="connectingInfo"
+        :type="connLineType"
+        :borderColor="connLineBorderColor"
+        :borderWidth="connLineBorderWidth"
+        v-show="connecting"
+      />
       <g id="nodes">
         <Node
           :node="n"
@@ -43,13 +49,6 @@
           :key="n.id"
         />
       </g>
-      <ConnectionLine
-        :info="connectingInfo"
-        :type="connLineType"
-        :borderColor="connLineBorderColor"
-        :borderWidth="connLineBorderWidth"
-        v-show="connecting"
-      />
       <g
         id="node-contextmenu"
         @click.stop=""
@@ -215,7 +214,6 @@ export default {
     },
     removeNode(id) {
       this.removeConnsOfNode(id);
-      console.log(id);
       const i = this.nodes.findIndex((x) => x.id == id);
       this.nodes.splice(i, 1);
       this.selectedNode = null;

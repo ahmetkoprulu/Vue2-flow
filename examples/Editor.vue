@@ -7,6 +7,7 @@
       :footer-style="{ 'margin-left': '35%' }"
       :enableConnContextMenu="true"
       :enableNodeContextMenu="true"
+      :connLineType="'step'"
     >
       <div
         slot="nodeContextmenu"
@@ -85,138 +86,178 @@ export default {
       nodes: [
         {
           id: 1,
-          x: 84.453125,
-          y: 189,
-          width: 120,
-          height: 50,
+          x: 85.32548522949219,
+          y: 181.67115783691406,
+          width: 80,
+          height: 40,
           name: "Start",
           type: "input",
           shape: "rect",
           style: {
-            backgroundColor: "lightgreen",
-            color: "green",
-            borderColor: "green",
+            backgroundColor: "lightgrey",
+            color: "lightgrey",
+            borderColor: "lightgrey",
             borderWidth: "3px",
           },
         },
         {
           id: 2,
-          x: 782.453125,
-          y: 188,
-          width: 120,
-          height: 50,
-          name: "End",
+          x: 576.8151245117188,
+          y: 173.6366729736328,
+          width: 80,
+          height: 40,
+          name: "Done",
           type: "output",
           shape: "rect",
           style: {
-            backgroundColor: "lightcoral",
-            color: "red",
-            borderColor: "red",
+            backgroundColor: "white",
+            color: "green",
+            borderColor: "lightgreen",
             borderWidth: "3px",
           },
         },
         {
           id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-          x: 427.453125,
-          y: 73,
-          width: 120,
-          height: 50,
-          name: "Step 1",
+          x: 237.9583740234375,
+          y: 99.05230712890625,
+          width: 80,
+          height: 40,
+          name: "Backlog",
           type: "io",
           shape: "rect",
         },
         {
           id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-          x: 326.453125,
-          y: 339,
-          width: 120,
-          height: 50,
-          name: "Step 2",
+          x: 370.6851501464844,
+          y: 183.736572265625,
+          width: 80,
+          height: 40,
+          name: "To Do",
           type: "io",
           shape: "rect",
         },
         {
           id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-          x: 550.453125,
-          y: 338,
-          width: 120,
-          height: 50,
-          name: "Step 3",
+          x: 243.53701782226562,
+          y: 257.6601867675781,
+          width: 134.16165161132812,
+          height: 39.097320556640625,
+          name: "In Progress",
+          type: "io",
+          shape: "rect",
+        },
+        {
+          id: "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
+          x: 421.5058288574219,
+          y: 257.04852294921875,
+          width: 80,
+          height: 40,
+          name: "In Review",
           type: "io",
           shape: "rect",
         },
       ],
       connections: [
         {
-          id: "357080f7-b3d3-4d4a-bfdd-0ddfb6c42905",
+          id: "449a3934-ddd4-469c-842a-43a6f7c1dfa1",
           source: {
             id: 1,
             position: "right",
           },
           destination: {
             id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-            position: "left",
-          },
-          type: "bezier",
-          style: {
-            animated: true,
-            borderWidth: "3px",
-          },
-          markerEnd: "arrow",
-        },
-        {
-          id: "b3c13204-0003-4619-ad92-8514eeaf9e6c",
-          source: {
-            id: 1,
-            position: "right",
-          },
-          destination: {
-            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-            position: "left",
-          },
-          type: "bezier",
-          markerEnd: "arrowclosed",
-        },
-        {
-          id: "c7712c70-07cf-42e4-ae72-289407decb42",
-          source: {
-            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-            position: "right",
-          },
-          destination: {
-            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-            position: "left",
-          },
-          type: "bezier",
-          markerEnd: "arrowclosed",
-        },
-        {
-          id: "0dbba44a-3356-4504-b814-6b08ae3a005d",
-          source: {
-            id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-            position: "right",
-          },
-          destination: {
-            id: 2,
-            position: "left",
-          },
-          type: "smoothstep",
-          style: {
-            borderColor: "lightblue",
-          },
-        },
-        {
-          id: "0936c57d-680a-4ec6-8bc8-6c73feb04c74",
-          source: {
-            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
-            position: "right",
-          },
-          destination: {
-            id: 2,
             position: "left",
           },
           type: "step",
-          style: {},
+          style: {
+            borderColor: "#b1b1b7",
+            borderWidth: "2px",
+          },
+        },
+        {
+          id: "e6ed4172-310a-41c0-8eed-05456ec04232",
+          source: {
+            id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
+            position: "right",
+          },
+          destination: {
+            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
+            position: "left",
+          },
+          type: "bezier",
+          style: {
+            borderColor: "#b1b1b7",
+            borderWidth: "2px",
+          },
+        },
+        {
+          id: "829ab3ac-66c9-4315-a7cc-220a76c938da",
+          source: {
+            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
+            position: "right",
+          },
+          destination: {
+            id: "d070e195-b70c-4635-b639-b6d27e1f5b1e",
+            position: "left",
+          },
+          type: "step",
+          markerEnd: "arrowclosed",
+          style: {
+            borderColor: "red",
+            borderWidth: "2px",
+          },
+        },
+        {
+          id: "be9637ae-ef9e-4bb2-adf4-941120e16237",
+          source: {
+            id: "9519aec4-52df-47a6-b2f0-b84c177eafbe",
+            position: "right",
+          },
+          destination: {
+            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
+            position: "left",
+          },
+          type: "step",
+          markerEnd: "arrow",
+          style: {
+            borderColor: "#b1b1b7",
+            borderWidth: "2px",
+          },
+        },
+        {
+          id: "23a532b7-f944-479d-abd3-013aeda80454",
+          source: {
+            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
+            position: "right",
+          },
+          destination: {
+            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
+            position: "left",
+          },
+          type: "step",
+          markerEnd: "arrow",
+          style: {
+            borderColor: "#b1b1b7",
+            borderWidth: "2px",
+          },
+        },
+        {
+          id: "fe8dbf1e-74fc-4dca-8d67-e93014258ce5",
+          source: {
+            id: "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
+            position: "right",
+          },
+          destination: {
+            id: 2,
+            position: "left",
+          },
+          type: "bezier",
+          markerEnd: "arrowclosed",
+          style: {
+            animated: true,
+            borderColor: "#b1b1b7",
+            borderWidth: "2px",
+          },
         },
       ],
     };
