@@ -5,7 +5,7 @@
     :d="path"
     :stroke="borderColor"
     :stroke-width="borderWidth"
-    :marker-end="`url(#${conn.markerEnd || ''})`"
+    :marker-end="`url(#${conn.id}-connection-marker)`"
   />
 </template>
 <script>

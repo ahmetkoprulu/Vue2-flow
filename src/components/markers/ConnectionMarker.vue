@@ -11,19 +11,19 @@
     :orient="orient"
   >
     <polyline
-      :stroke="color"
+      :stroke="computedColor"
       stroke-linecap="round"
       stroke-linejoin="round"
-      :stroke-width="strokeWidth"
-      :fill="color"
+      :stroke-width="computedStrokeWidth"
+      :fill="computedColor"
       points="-5,-4 0,0 -5,4 -5,-4"
       v-if="type === 'arrowclosed'"
     />
     <polyline
-      :stroke="color"
+      :stroke="computedColor"
       stroke-linecap="round"
       stroke-linejoin="round"
-      :stroke-width="strokeWidth"
+      :stroke-width="computedStrokeWidth"
       fill="none"
       points="-5,-4 0,0 -5,4"
       v-if="type === 'arrow'"
@@ -32,12 +32,26 @@
 </template>
 <script>
 export default {
+  computed: {
+    computedColor() {
+      if (this.conn.style && this.conn.style.borderColor)
+        return this.conn.style.borderColor;
+
+      return this.color;
+    },
+    computedStrokeWidth() {
+      if (this.conn.style && this.conn.style.borderWidth)
+        return this.conn.style.borderWidth;
+
+      return this.strokeWidth;
+    },
+  },
   props: {
     conn: {
       required: true,
     },
     type: {
-      default: true,
+      default: "",
     },
     width: {
       default: "25",
@@ -49,10 +63,10 @@ export default {
       default: "strokeWidth",
     },
     strokeWidth: {
-      default: 1,
+      default: "2px",
     },
     orient: {
-      default: "auto",
+      default: "0deg",
     },
     color: {
       default: "#b1b1b7",
