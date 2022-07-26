@@ -50,7 +50,7 @@
 
 You can build flow diagrams or develop editors to make users able to build ones with vue2 flow. The rest is your imagination.
 
-**Demo project:**
+**Demo project:** https://codesandbox.io/s/vue2-flow-demo-mjdogn
 
 ### Features
 
