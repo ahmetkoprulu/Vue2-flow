@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "x": 85.32548522949219,
+    "y": 181.67115783691406,
+    "width": 80,
+    "height": 40,
+    "name": "Start",
+    "type": "input",
+    "shape": "rect",
+    "style": {
+      "backgroundColor": "lightgrey",
+      "color": "lightgrey",
+      "borderColor": "lightgrey",
+      "borderWidth": "3px"
+    }
+  },
+  {
+    "id": 2,
+    "x": 576.8151245117188,
+    "y": 173.6366729736328,
+    "width": 80,
+    "height": 40,
+    "name": "Done",
+    "type": "output",
+    "shape": "rect",
+    "style": {
+      "backgroundColor": "white",
+      "color": "green",
+      "borderColor": "lightgreen",
+      "borderWidth": "3px"
+    }
+  },
+  {
+    "id": "d070e195-b70c-4635-b639-b6d27e1f5b1e",
+    "x": 237.9583740234375,
+    "y": 99.05230712890625,
+    "width": 80,
+    "height": 40,
+    "name": "Backlog",
+    "type": "io",
+    "shape": "rect"
+  },
+  {
+    "id": "9519aec4-52df-47a6-b2f0-b84c177eafbe",
+    "x": 370.6851501464844,
+    "y": 183.736572265625,
+    "width": 80,
+    "height": 40,
+    "name": "To Do",
+    "type": "io",
+    "shape": "rect"
+  },
+  {
+    "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
+    "x": 243.53701782226562,
+    "y": 257.6601867675781,
+    "width": 134.16165161132812,
+    "height": 39.097320556640625,
+    "name": "In Progress",
+    "type": "io",
+    "shape": "rect"
+  },
+  {
+    "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
+    "x": 421.5058288574219,
+    "y": 257.04852294921875,
+    "width": 80,
+    "height": 40,
+    "name": "In Review",
+    "type": "io",
+    "shape": "rect"
+  }
+]

@@ -17,4 +17,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+}
+</style>
