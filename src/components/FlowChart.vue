@@ -189,17 +189,34 @@ export default {
     this.svg.call(zoom).call(zoom.transform, this.d3Transformation);
   },
   methods: {
-    addNode(
-      id = undefined,
-      name = "New Step",
-      type = "io",
-      x = 0,
-      y = 0,
-      width = 100,
-      height = 50,
-      style = null
-    ) {
-      if (!id) id = uuidv4();
+    zoomIn() {
+      this.svg.call(this.zoom.scaleBy, 1.2);
+    },
+    zoomOut() {
+      this.svg.call(this.zoom.scaleBy, 0.8);
+    },
+    fitToNodes() {
+      let g = d3.select("#nodes");
+      let bounds = g.node().getBBox();
+      const svg = this.svg.node();
+
+      const scale =
+        Math.min(
+          svg.clientWidth / bounds.width,
+          svg.clientHeight / bounds.height
+        ) - 0.5;
+      const x = -(bounds.x + bounds.width / 2) * scale + svg.clientWidth / 2;
+      const y = -(bounds.y + bounds.height / 2) * scale + svg.clientHeight / 2;
+
+      this.transformation.x = x;
+      this.transformation.y = y;
+      this.transformation.k = scale;
+
+      this.svg.call(
+        this.zoom.transform,
+        d3.zoomIdentity.translate(x, y).scale(scale)
+      );
+    },
 
       this.nodes.push({
         id: id,
