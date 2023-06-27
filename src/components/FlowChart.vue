@@ -229,18 +229,17 @@ export default {
         style: style,
       });
     },
-    removeNode(id) {
+    deleteNode(id) {
       this.removeConnsOfNode(id);
       const i = this.nodes.findIndex((x) => x.id == id);
       this.nodes.splice(i, 1);
-      this.selectedNode = null;
+      this.$set(this, "selectedNode", null);
     },
     removeConnsOfNode(id) {
-      let connsToDelete = this.connections.filter((x) => {
-        x.source.id != id || x.destination.id != id;
-      });
-
-      connsToDelete.forEach((x) => {});
+      this.connections
+        .filter((x) => x.source.id == id || x.destination.id == id)
+        .map((x) => x.id)
+        .forEach((x) => this.removeConn(x));
     },
     removeConn(id) {
       const i = this.connections.findIndex((x) => x.id == id);
