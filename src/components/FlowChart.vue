@@ -62,9 +62,11 @@
           width="1"
           height="1"
         >
-          <ChartContextmenu
-            :actions="contextmenuActions"
-            @action-executed="showContextMenu = false"
+          <slot
+            name="contextmenu"
+            :target="contextmenuTarget"
+            :position="contextmenuPosition"
+            :hide-contextmenu="hideContextmenu"
           />
         </foreignObject>
       </g>
@@ -85,7 +87,6 @@ import Node from "./nodes/node-wrapper.vue";
 import ConnectionLine from "./ConnectionLine.vue";
 import ConnectionWrapper from "./conns/ConnectionWrapper.vue";
 import ConnectionMarkerRenderer from "./markers/ConnectionMarkerRenderer";
-import ChartContextmenu from "./Contextmenu.vue";
 
 export default {
   name: "FlowChart",
@@ -103,7 +104,7 @@ export default {
       d3Transformation: null,
       showContextMenu: false,
       contextmenuPosition: { x: 0, y: 0 },
-      contextmenuActions: [],
+      contextmenuTarget: [],
     };
   },
   computed: {
@@ -135,27 +136,6 @@ export default {
     },
     connectionMarkers() {
       return this.connections.filter((conn) => conn.markerEnd);
-    },
-    nodeContextMenuPosition() {
-      if (!this.enableNodeContextMenu) return { x: 0, y: 0 };
-      if (!this.selectedNode) return { x: 0, y: 0 };
-
-      return {
-        x: this.selectedNode.x,
-        y:
-          this.selectedNode.y - 76 > 0
-            ? this.selectedNode.y - 76
-            : this.selectedNode.y + this.selectedNode.height + 26,
-      };
-    },
-    connContextMenuPosition() {
-      if (!this.enableConnContextMenu) return { x: 0, y: 0 };
-      if (!this.selectedConnection) return { x: 0, y: 0 };
-
-      return {
-        x: this.connContextMenuX(this.selectedConnection),
-        y: this.connContextMenuY(this.selectedConnection),
-      };
     },
   },
   mounted() {
@@ -339,7 +319,7 @@ export default {
       this.connecting = false;
     },
     onChartContextMenu(e) {
-      this.displayContextMenu(e, this.chartContextmenuActions);
+      this.displayContextMenu(e, "chart");
       this.$emit("chart-contextmenu");
     },
     // Node Events
@@ -359,7 +339,7 @@ export default {
       this.$emit("node-click", node);
     },
     onNodeContextMenu(e, node) {
-      this.displayContextMenu(e, this.nodeContextmenuActions);
+      this.displayContextMenu(e, "node");
       this.$set(this, "selectedNode", node);
       this.$emit("node-contextmenu", node);
     },
@@ -372,7 +352,7 @@ export default {
       this.$emit("connection-blur", conn);
     },
     onConnContextMenu(e, conn) {
-      this.displayContextMenu(e, this.connectionContextmenuActions);
+      this.displayContextMenu(e, "connection");
       this.selectedConnection = conn;
       this.$emit("connection-contextmenu", conn);
     },
@@ -387,12 +367,15 @@ export default {
         destinationPosition: null,
       };
     },
-    displayContextMenu(e, actions) {
+    displayContextMenu(e, type) {
       var [x, y] = d3.pointer(e, this.svg.node());
 
       this.contextmenuPosition = { x: x, y: y };
-      this.contextmenuActions = actions;
+      this.contextmenuTarget = type;
       this.showContextMenu = true;
+    },
+    hideContextmenu() {
+      this.showContextMenu = false;
     },
   },
   props: {
@@ -411,23 +394,6 @@ export default {
     connLineBorderColor: { type: String, default: "#b1b1b7" },
     footerStyle: { type: Object, default: () => {} },
     enableContextMenu: { type: Boolean, default: true },
-    nodeContextmenuActions: { type: Array, default: () => [] },
-    connectionContextmenuActions: { type: Array, default: () => [] },
-    chartContextmenuActions: { type: Array, default: () => [] },
-    connContextMenuX: {
-      type: Function,
-      default: (conn) => {
-        return (
-          conn.source.x +
-          conn.source.width +
-          (conn.destination.x - conn.source.x) / 2
-        );
-      },
-    },
-    connContextMenuY: {
-      type: Function,
-      default: (conn) => conn.source.y - 20,
-    },
   },
   components: {
     Background,
@@ -435,7 +401,6 @@ export default {
     ConnectionLine,
     ConnectionWrapper,
     ConnectionMarkerRenderer,
-    ChartContextmenu,
   },
 };
 </script>

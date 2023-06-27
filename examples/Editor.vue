@@ -14,6 +14,23 @@
       @connection-click="selectConnection"
       @connection-contextmenu="selectConnection"
     >
+      <template #contextmenu="{ target }">
+        <ChartContextmenu
+          :actions="chartActions"
+          @action-executed="$refs.chart.hideContextmenu"
+          v-if="target === 'chart'"
+        />
+        <ChartContextmenu
+          :actions="nodeActions"
+          @action-executed="$refs.chart.hideContextmenu"
+          v-else-if="target === 'node'"
+        />
+        <ChartContextmenu
+          :actions="connectionActions"
+          @action-executed="$refs.chart.hideContextmenu"
+          v-else-if="target === 'connection'"
+        />
+      </template>
       <div class="toolbar" slot="footer">
         <div
           class="context__button prevent-select"
@@ -45,6 +62,7 @@
 
 <script>
 import Chart from "@/components/FlowChart.vue";
+import ChartContextmenu from "./Contextmenu.vue";
 import nodes from "./nodes.json";
 import connections from "./connections.json";
 
@@ -141,7 +159,6 @@ export default {
     },
 
     cloneNode() {
-      console.log(this.selectedNode);
       if (!this.isNodeSelected) return;
 
       this.copiedNode = { ...this.selectedNode };
@@ -176,11 +193,11 @@ export default {
     },
 
     selectNode(node) {
-      if (node.type == "start" || node.type == "end") {
+      if (node.type == "input" || node.type == "output") {
         this.selectedNode = null;
         return;
       }
-      console.log(node);
+
       this.selectedNode = node;
       this.$emit("update");
     },
@@ -198,6 +215,7 @@ export default {
   },
   components: {
     Chart,
+    ChartContextmenu,
   },
 };
 </script>
