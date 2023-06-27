@@ -16,8 +16,8 @@
           :style="action.style"
           @click.stop="executeAction(action)"
         >
-          <i class="ml-2" :class="action.icon"></i>
-          <span class="ml-2">{{ action.text }}</span>
+          <font-awesome-icon style="margin-left: 6px" :icon="action.icon" />
+          <span style="margin-left: 6px">{{ action.text }}</span>
         </li>
       </ul>
       <div class="chart__contextmenu__division prevent-select" v-if="isDivided">
@@ -29,8 +29,8 @@
           :style="action.style"
           @click.prevent.stop="executeAction(action)"
         >
-          <i class="ml-2" :class="action.icon"></i>
-          <span class="ml-2">{{ action.text }}</span>
+          <font-awesome-icon style="margin-left: 6px" :icon="action.icon" />
+          <span style="margin-left: 6px">{{ action.text }}</span>
         </li>
       </div>
     </div>

@@ -78,12 +78,12 @@ export default {
       chartActions: [
         {
           text: "Add New Step",
-          icon: "far fa-fw fa-plus",
+          icon: "fa-solid fa-fw fa-plus",
           event: () => this.addNode(),
         },
         {
           text: "Paste",
-          icon: "far fa-fw fa-paste",
+          icon: "fa-solid fa-fw fa-paste",
           event: () => this.addNode(true),
           disabled: () => this.copiedNode == null,
         },
@@ -91,13 +91,13 @@ export default {
       nodeActions: [
         {
           text: "Copy",
-          icon: "far fa-fw fa-copy",
+          icon: "fa-solid fa-fw fa-copy",
           event: () => this.copyNode(),
           disabled: () => !this.isSelectedNodeIO,
         },
         {
           text: "Delete",
-          icon: "far fa-fw fa-trash",
+          icon: "fa-solid fa-fw fa-trash",
           style: {
             color: "red",
           },
@@ -109,7 +109,7 @@ export default {
       connectionActions: [
         {
           text: "Delete",
-          icon: "far fa-fw fa-trash",
+          icon: "fa-solid fa-fw fa-trash",
           style: {
             color: "red",
           },
