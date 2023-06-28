@@ -1,21 +1,21 @@
 <template>
   <g :id="`${node.id}-resize-group`" v-show="visible">
-    <rect
+    <!-- <rect
       :id="`${node.id}-resize-frame`"
-      :x="node.x - 3"
-      :y="node.y - 3"
-      :width="node.width + 6"
-      :height="node.height + 6"
+      :x="node.x - 8"
+      :y="node.y - 8"
+      :width="node.width + 16"
+      :height="node.height + 16"
       fill="transparent"
       stroke="#18A0FB"
       stroke-width="1px"
-    />
+    /> -->
     <rect
       :id="`${node.id}-resize-frame-nw`"
-      :x="node.x - 6"
-      :y="node.y - 6"
-      :width="6"
-      :height="6"
+      :x="node.x - 12"
+      :y="node.y - 12"
+      :width="8"
+      :height="8"
       fill="white"
       stroke="#18A0FB"
       stroke-width="1px"
@@ -23,10 +23,10 @@
     />
     <rect
       :id="`${node.id}-resize-frame-ne`"
-      :x="node.x + node.width"
-      :y="node.y - 6"
-      :width="6"
-      :height="6"
+      :x="node.x + node.width + 4"
+      :y="node.y - 12"
+      :width="8"
+      :height="8"
       fill="white"
       stroke="#18A0FB"
       stroke-width="1px"
@@ -34,10 +34,10 @@
     />
     <rect
       :id="`${node.id}-resize-frame-se`"
-      :x="node.x + node.width"
-      :y="node.y + node.height"
-      :width="6"
-      :height="6"
+      :x="node.x + node.width + 4"
+      :y="node.y + node.height + 4"
+      :width="8"
+      :height="8"
       fill="white"
       stroke="#18A0FB"
       stroke-width="1px"
@@ -45,10 +45,10 @@
     />
     <rect
       :id="`${node.id}-resize-frame-sw`"
-      :x="node.x - 6"
-      :y="node.y + node.height"
-      :width="6"
-      :height="6"
+      :x="node.x - 12"
+      :y="node.y + node.height + 4"
+      :width="8"
+      :height="8"
       fill="white"
       stroke="#18A0FB"
       stroke-width="1px"

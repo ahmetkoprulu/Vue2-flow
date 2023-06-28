@@ -99,7 +99,7 @@
   justify-content: center;
 }
 
-.node__contextmenu {
+.chart__contextmenu {
   overflow: visible;
 }
 
@@ -121,8 +121,4 @@
 
 .connection:focus {
   outline: none;
-}
-
-.connection__contextmenu {
-  overflow: visible;
 }

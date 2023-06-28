@@ -2,7 +2,7 @@
   <g
     :id="node.id"
     class="node"
-    @click="$emit('click', $event)"
+    @click="$emit('click', $event, node)"
     @contextmenu.prevent="$emit('contextmenu', $event, node)"
     @focus="onNodeFocus"
     @blur="onNodeBlur"
@@ -142,13 +142,13 @@ export default {
       e.stopPropagation();
       this.$refs.resizeFrame.show();
       this.showConnector = true;
-      this.$emit("focus", this.node);
+      this.$emit("focus", e, this.node);
     },
     onNodeBlur(e) {
       e.stopPropagation();
       this.$refs.resizeFrame.hide();
       this.showConnector = false;
-      this.$emit("blur", this.node);
+      this.$emit("blur", e, this.node);
     },
     onConnectorMouseOver(e) {
       d3.select(e.srcElement).attr("r", 10);

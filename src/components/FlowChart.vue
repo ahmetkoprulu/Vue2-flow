@@ -39,8 +39,8 @@
           :connecting-info="connectingInfo"
           @connecting="onConnecting"
           @connected="onConnected"
-          @click.stop="onNodeClick(n)"
-          @contextmenu.stop="onNodeContextMenu($event, n)"
+          @click.stop="onNodeClick"
+          @contextmenu.stop="onNodeContextMenu"
           @focus="onNodeFocus"
           @blur="onNodeBlur"
           @node-dragstart="onNodeDragStart"
@@ -58,7 +58,7 @@
           :x="contextmenuPosition.x"
           :y="contextmenuPosition.y"
           v-if="showContextMenu"
-          class="node__contextmenu"
+          class="chart__contextmenu"
           width="1"
           height="1"
         >
@@ -67,6 +67,29 @@
             :target="contextmenuTarget"
             :position="contextmenuPosition"
             :hide-contextmenu="hideContextmenu"
+          />
+        </foreignObject>
+      </g>
+
+      <g
+        id="chart-options"
+        ref="chart-options"
+        @click.stop=""
+        v-show="enableOptions"
+      >
+        <foreignObject
+          style="overflow: visible"
+          :x="optionsPosition.x"
+          :y="optionsPosition.y"
+          v-if="showOptions"
+          width="1"
+          height="1"
+        >
+          <slot
+            name="options"
+            :target="optionsTarget"
+            :position="optionsPosition"
+            :element="optionsElement"
           />
         </foreignObject>
       </g>
@@ -104,7 +127,11 @@ export default {
       d3Transformation: null,
       showContextMenu: false,
       contextmenuPosition: { x: 0, y: 0 },
-      contextmenuTarget: [],
+      contextmenuTarget: null,
+      showOptions: false,
+      optionsPosition: { x: 0, y: 0 },
+      optionsElement: null,
+      optionsTarget: null,
     };
   },
   computed: {
@@ -148,6 +175,7 @@ export default {
         this.$set(this, "selectedNode", null);
         this.$set(this, "selectedConnection", null);
         this.showContextMenu = false;
+        this.showOptions = false;
       })
       .on("contextmenu", this.onChartContextMenu)
       .on("wheel", this.wheeled);
@@ -252,6 +280,7 @@ export default {
       d3.select("g#connection-line").attr("transform", e.transform);
       d3.select("g#node-contextmenu").attr("transform", e.transform);
       d3.select("g#connection-contextmenu").attr("transform", e.transform);
+      d3.select("g#chart-options").attr("transform", e.transform);
     },
     onConnecting(e, n, c) {
       this.connecting = true;
@@ -323,29 +352,35 @@ export default {
       this.$emit("chart-contextmenu");
     },
     // Node Events
-    onNodeFocus(node) {
+    onNodeFocus(e, node) {
+      this.displayOptions(node, "node");
       this.$set(this, "selectedNode", node);
+      this.$set(this, "selectedConnection", null);
       this.$emit("node-focus", node);
     },
     onNodeBlur(node) {
+      this.showOptions = false;
       this.$emit("node-blur", node);
     },
     onNodeDragStart(node) {
       this.showContextMenu = false;
       this.$emit("node-dragstart", node);
     },
-    onNodeClick(node) {
+    onNodeClick(e, node) {
       this.showContextMenu = false;
       this.$emit("node-click", node);
     },
     onNodeContextMenu(e, node) {
       this.displayContextMenu(e, "node");
       this.$set(this, "selectedNode", node);
+      this.$set(this, "selectedConnection", null);
       this.$emit("node-contextmenu", node);
     },
     // Connection Events
     onConnFocus(conn) {
-      this.selectedConnection = conn;
+      this.displayOptions(conn, "connection");
+      this.$set(this, "selectedNode", null);
+      this.$set(this, "selectedConnection", conn);
       this.$emit("connection-focus", conn);
     },
     onConnBlur(conn) {
@@ -354,6 +389,7 @@ export default {
     onConnContextMenu(e, conn) {
       this.displayContextMenu(e, "connection");
       this.selectedConnection = conn;
+      this.selectedNode = null;
       this.$emit("connection-contextmenu", conn);
     },
     generateId() {
@@ -377,6 +413,38 @@ export default {
     hideContextmenu() {
       this.showContextMenu = false;
     },
+    displayOptions(e, type) {
+      this.optionsTarget = type;
+      this.optionsElement = e;
+      this.showOptions = true;
+    },
+  },
+  watch: {
+    optionsElement: {
+      deep: true,
+      handler(val) {
+        if (!val) {
+          this.optionsPosition = {
+            x: 0,
+            y: 0,
+          };
+        }
+        console.log(val);
+        if (this.optionsTarget == "node") {
+          this.optionsPosition = { x: val.x + val.width / 2, y: val.y };
+        } else if (this.optionsTarget == "connection") {
+          let startX = val.source.x + val.source.width;
+          let endX = val.destination.x;
+          let positionX = (startX + endX) / 2;
+          let positionY = Math.min(val.source.y, val.destination.y);
+
+          this.optionsPosition = {
+            x: positionX,
+            y: positionY,
+          };
+        }
+      },
+    },
   },
   props: {
     width: { type: [String, Number], default: "100%" },
@@ -394,6 +462,7 @@ export default {
     connLineBorderColor: { type: String, default: "#b1b1b7" },
     footerStyle: { type: Object, default: () => {} },
     enableContextMenu: { type: Boolean, default: true },
+    enableOptions: { type: Boolean, default: true },
   },
   components: {
     Background,
