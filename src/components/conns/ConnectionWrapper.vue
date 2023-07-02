@@ -3,7 +3,9 @@
     :id="conn.id"
     class="chart__connection"
     :class="{
-      animated: animated,
+      animated: line == 'animated',
+      dashed: line == 'dashed',
+      solid: line == 'solid',
     }"
     @click.stop="$emit('click', conn)"
     @focus.stop="$emit('focus', conn)"
@@ -11,7 +13,7 @@
     @contextmenu.prevent="$emit('contextmenu', $event, conn)"
   >
     <component
-      :is="conn.type"
+      :is="type"
       v-bind="{
         conn: conn,
         sourceX: sourceConnectorX,
@@ -55,15 +57,16 @@ export default {
 
       return this.conn.style.borderWidth;
     },
-    animated() {
-      if (!this.conn.style || !this.conn.style.animated) return false;
-
-      return this.conn.style.animated;
-    },
   },
   props: {
     conn: {
       default: null,
+    },
+    type: {
+      default: "bezier",
+    },
+    line: {
+      default: "solid",
     },
   },
   components: {

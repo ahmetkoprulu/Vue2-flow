@@ -18,6 +18,8 @@
         <ConnectionMarkerRenderer :connections="connectionMarkers" />
         <ConnectionWrapper
           :conn="conn"
+          :line="conn.line"
+          :type="conn.type"
           @click="$emit('connection-click', conn)"
           @contextmenu.stop="onConnContextMenu($event, conn)"
           @focus="onConnFocus"
@@ -138,6 +140,8 @@ export default {
     includedConnection() {
       return this.connections
         .map((conn) => {
+          if (!conn.markerEnd) conn.markerEnd = null;
+
           let sourceNode = this.nodes.find((node) => node.id == conn.source.id);
           if (!sourceNode) return null;
 
@@ -156,7 +160,6 @@ export default {
               ...destNode,
               ...conn.destination,
             },
-            type: "bezier",
           };
         })
         .filter((conn) => conn != null);
@@ -172,10 +175,10 @@ export default {
     this.zoom = zoom;
     this.svg
       .on("click", (e) => {
-        this.$set(this, "selectedNode", null);
-        this.$set(this, "selectedConnection", null);
         this.showContextMenu = false;
         this.showOptions = false;
+        this.$set(this, "selectedNode", null);
+        this.$set(this, "selectedConnection", null);
       })
       .on("contextmenu", this.onChartContextMenu)
       .on("wheel", this.wheeled);
@@ -239,6 +242,7 @@ export default {
       this.removeConnsOfNode(id);
       const i = this.nodes.findIndex((x) => x.id == id);
       this.nodes.splice(i, 1);
+      this.showOptions = false;
       this.$set(this, "selectedNode", null);
     },
     removeConnsOfNode(id) {
@@ -251,6 +255,7 @@ export default {
       const i = this.connections.findIndex((x) => x.id == id);
       this.connections.splice(i, 1);
       this.selectedConnection = null;
+      this.showOptions = false;
     },
     getNodes() {
       return this.nodes;
@@ -323,6 +328,7 @@ export default {
         },
         destination: { id: n.id, position: "left" },
         type: this.connLineType,
+        line: "solid",
         style: {
           borderColor: this.connLineBorderColor,
           borderWidth: this.connLineBorderWidth,
@@ -353,13 +359,13 @@ export default {
     },
     // Node Events
     onNodeFocus(e, node) {
-      this.displayOptions(node, "node");
+      this.showOptions = false;
       this.$set(this, "selectedNode", node);
       this.$set(this, "selectedConnection", null);
+      this.displayOptions(node, "node");
       this.$emit("node-focus", node);
     },
     onNodeBlur(node) {
-      this.showOptions = false;
       this.$emit("node-blur", node);
     },
     onNodeDragStart(node) {
@@ -378,9 +384,10 @@ export default {
     },
     // Connection Events
     onConnFocus(conn) {
-      this.displayOptions(conn, "connection");
+      this.showOptions = false;
       this.$set(this, "selectedNode", null);
       this.$set(this, "selectedConnection", conn);
+      this.displayOptions(conn, "connection");
       this.$emit("connection-focus", conn);
     },
     onConnBlur(conn) {
@@ -429,7 +436,7 @@ export default {
             y: 0,
           };
         }
-        console.log(val);
+
         if (this.optionsTarget == "node") {
           this.optionsPosition = { x: val.x + val.width / 2, y: val.y };
         } else if (this.optionsTarget == "connection") {

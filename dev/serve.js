@@ -3,8 +3,8 @@ import Dev from './serve.vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlus, faCropSimple, faClone, faTrash, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faPaste, faCopy } from '@fortawesome/free-solid-svg-icons'
-library.add(faPlus, faCropSimple, faClone, faTrash, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faPaste, faCopy);
+import { faPlus, faCropSimple, faClone, faTrash, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faPaste, faCopy, faFont, faBorderAll, faSquare, faAngleDown } from '@fortawesome/free-solid-svg-icons'
+library.add(faPlus, faCropSimple, faClone, faTrash, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faPaste, faCopy, faFont, faBorderAll, faSquare, faAngleDown);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;

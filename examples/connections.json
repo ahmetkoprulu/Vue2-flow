@@ -1,52 +1,15 @@
 [
   {
     "id": "449a3934-ddd4-469c-842a-43a6f7c1dfa1",
-    "source": {
-      "id": 1,
-      "position": "right"
-    },
+    "source": { "id": 1, "position": "right" },
     "destination": {
       "id": "d070e195-b70c-4635-b639-b6d27e1f5b1e",
       "position": "left"
     },
     "type": "step",
-    "style": {
-      "borderColor": "#b1b1b7",
-      "borderWidth": "2px"
-    }
-  },
-  {
-    "id": "e6ed4172-310a-41c0-8eed-05456ec04232",
-    "source": {
-      "id": "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-      "position": "right"
-    },
-    "destination": {
-      "id": "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-      "position": "left"
-    },
-    "type": "bezier",
-    "style": {
-      "borderColor": "#b1b1b7",
-      "borderWidth": "2px"
-    }
-  },
-  {
-    "id": "829ab3ac-66c9-4315-a7cc-220a76c938da",
-    "source": {
-      "id": "9519aec4-52df-47a6-b2f0-b84c177eafbe",
-      "position": "right"
-    },
-    "destination": {
-      "id": "d070e195-b70c-4635-b639-b6d27e1f5b1e",
-      "position": "left"
-    },
-    "type": "step",
-    "markerEnd": "arrowclosed",
-    "style": {
-      "borderColor": "red",
-      "borderWidth": "2px"
-    }
+    "style": { "borderColor": "#b1b1b7", "borderWidth": "3px" },
+    "line": "solid",
+    "markerEnd": null
   },
   {
     "id": "be9637ae-ef9e-4bb2-adf4-941120e16237",
@@ -60,44 +23,46 @@
     },
     "type": "step",
     "markerEnd": "arrow",
-    "style": {
-      "borderColor": "#b1b1b7",
-      "borderWidth": "2px"
-    }
+    "style": { "borderColor": "#b1d2b8", "borderWidth": "2px" },
+    "line": "solid"
   },
   {
-    "id": "23a532b7-f944-479d-abd3-013aeda80454",
+    "id": "1cdc9400-9f70-4f11-a146-0dca38172721",
+    "source": { "id": 1, "position": "right" },
+    "destination": {
+      "id": "9519aec4-52df-47a6-b2f0-b84c177eafbe",
+      "position": "left"
+    },
+    "type": "bezier",
+    "line": "solid",
+    "style": { "borderColor": "#b1b1b7", "borderWidth": "2px" },
+    "markerEnd": null
+  },
+  {
+    "id": "53efec9b-ed44-4580-bdb9-b38a4856e69f",
     "source": {
       "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
       "position": "right"
     },
-    "destination": {
-      "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
-      "position": "left"
-    },
-    "type": "step",
-    "markerEnd": "arrow",
-    "style": {
-      "borderColor": "#b1b1b7",
-      "borderWidth": "2px"
-    }
+    "destination": { "id": 2, "position": "left" },
+    "type": "bezier",
+    "line": "solid",
+    "style": { "borderColor": "#b1b1b7", "borderWidth": "2px" },
+    "markerEnd": null
   },
   {
-    "id": "fe8dbf1e-74fc-4dca-8d67-e93014258ce5",
+    "id": "09d47d5f-dd6c-4008-8f1d-612e474645b6",
     "source": {
-      "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f91",
+      "id": "d070e195-b70c-4635-b639-b6d27e1f5b1e",
       "position": "right"
     },
     "destination": {
-      "id": 2,
+      "id": "0a7b48ec-cbd1-4f9a-8491-a80941712f99",
       "position": "left"
     },
     "type": "bezier",
-    "markerEnd": "arrowclosed",
-    "style": {
-      "animated": true,
-      "borderColor": "#b1b1b7",
-      "borderWidth": "2px"
-    }
+    "line": "solid",
+    "style": { "borderColor": "#b1b1b7", "borderWidth": "2px" },
+    "markerEnd": null
   }
 ]

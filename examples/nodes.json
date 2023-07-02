@@ -9,10 +9,11 @@
     "type": "input",
     "shape": "rect",
     "style": {
-      "backgroundColor": "lightgrey",
-      "color": "lightgrey",
-      "borderColor": "lightgrey",
-      "borderWidth": "3px"
+      "backgroundColor": "#6372e3",
+      "color": "#f3bb86",
+      "borderColor": "#f3bb86",
+      "borderWidth": "0px",
+      "fontSize": "12px"
     }
   },
   {
@@ -25,10 +26,11 @@
     "type": "output",
     "shape": "rect",
     "style": {
-      "backgroundColor": "white",
-      "color": "green",
-      "borderColor": "lightgreen",
-      "borderWidth": "3px"
+      "backgroundColor": "#6372e3",
+      "color": "#f3bb86",
+      "borderColor": "#f3bb86",
+      "borderWidth": "0px",
+      "fontSize": "12px"
     }
   },
   {

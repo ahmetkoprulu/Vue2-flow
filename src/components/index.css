@@ -58,6 +58,14 @@
   animation: dashdraw 0.5s linear infinite;
 }
 
+.chart__connection.dashed {
+  stroke-dasharray: 5;
+}
+
+.chart__connection.solid {
+  stroke-dasharray: none;
+}
+
 .chart__connection-path {
   fill: none;
 }

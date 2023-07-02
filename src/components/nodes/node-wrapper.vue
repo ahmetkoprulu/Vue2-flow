@@ -31,7 +31,10 @@
         :width="node.width - 10"
         :height="node.height - 10"
       >
-        <span class="node__content" :style="{ color: color }">
+        <span
+          class="node__content"
+          :style="{ color: color, fontSize: fontSize }"
+        >
           {{ node.name }}
         </span>
       </foreignObject>
@@ -126,6 +129,11 @@ export default {
       if (!this.node.style || !this.node.style.color) return "black";
 
       return this.node.style.color;
+    },
+    fontSize() {
+      if (!this.node.style || !this.node.style.fontSize) return "12px";
+
+      return this.node.style.fontSize;
     },
   },
   mounted() {

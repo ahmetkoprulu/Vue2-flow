@@ -5,9 +5,6 @@
       :nodes="nodes"
       :connections="connections"
       connLineType="bezier"
-      :node-contextmenu-actions="nodeActions"
-      :chart-contextmenu-actions="chartActions"
-      :connection-contextmenu-actions="connectionActions"
       @node-click="selectNode"
       @node-focus="selectNode"
       @node-contextmenu="selectNode"
@@ -30,6 +27,95 @@
           @action-executed="$refs.chart.hideContextmenu"
           v-else-if="target === 'connection'"
         />
+      </template>
+      <template #options="{ target, element }">
+        <div
+          class="toolbar chart-options"
+          style="width: 290px"
+          @contextmenu.prevent.stop=""
+          @mouseup.stop=""
+          @mousedown.stop=""
+          @mousemove.stop=""
+          v-if="target === 'node'"
+        >
+          <div class="prevent-select widget">
+            <ColorPicker
+              v-model="element.style.backgroundColor"
+              name="backgroundColor"
+              icon="fa-solid fa-square fa-fw"
+            />
+          </div>
+          <div class="prevent-select widget">
+            <ColorPicker
+              v-model="element.style.borderColor"
+              name="borderColor"
+              icon="fa-solid fa-border-all fa-fw"
+            />
+          </div>
+          <div class="prevent-select widget">
+            <SelectDropdown
+              style="width: 85px"
+              v-model="element.style.borderWidth"
+              :options="borderWidthOptions"
+            />
+          </div>
+          <div class="v-divider" />
+          <div class="prevent-select widget">
+            <ColorPicker
+              v-model="element.style.color"
+              name="color"
+              icon="fa-solid fa-font fa-fw"
+            />
+          </div>
+          <div class="prevent-select widget">
+            <SelectDropdown
+              v-model="element.style.fontSize"
+              :options="fontSizeOptions"
+            />
+          </div>
+        </div>
+        <div
+          class="toolbar chart-options"
+          style="width: 385px"
+          @contextmenu.prevent.stop=""
+          @mouseup.stop=""
+          @mousedown.stop=""
+          @mousemove.stop=""
+          v-if="target === 'connection'"
+        >
+          <div class="prevent-select widget">
+            <ColorPicker
+              v-model="element.style.borderColor"
+              name="backgroundColor"
+              icon="fa-solid fa-square fa-fw"
+            />
+          </div>
+          <div class="prevent-select widget">
+            <SelectDropdown
+              style="width: 90px"
+              v-model="element.type"
+              :options="connTypeOptions"
+            />
+          </div>
+          <div class="prevent-select widget">
+            <div class="prevent-select widget">
+              <SelectDropdown
+                style="width: 85px"
+                v-model="element.style.borderWidth"
+                :options="borderWidthOptions"
+              />
+            </div>
+          </div>
+          <div class="prevent-select widget">
+            <div class="prevent-select widget">
+              <SelectDropdown
+                style="width: 105px"
+                v-model="element.line"
+                :options="connLineOptions"
+              />
+            </div>
+          </div>
+        </div>
       </template>
       <div class="toolbar" slot="footer">
         <div
@@ -63,6 +149,8 @@
 <script>
 import Chart from "@/components/FlowChart.vue";
 import ChartContextmenu from "./Contextmenu.vue";
+import ColorPicker from "./ColorPicker.vue";
+import SelectDropdown from "./SelectDropdown.vue";
 import nodes from "./nodes.json";
 import connections from "./connections.json";
 
@@ -75,6 +163,78 @@ export default {
       copiedNode: null,
       selectedNode: null,
       selectedConn: null,
+      fontSizeOptions: [
+        {
+          value: "10px",
+          text: "10",
+        },
+        {
+          value: "12px",
+          text: "12",
+        },
+        {
+          value: "14px",
+          text: "14",
+        },
+        {
+          value: "16px",
+          text: "16",
+        },
+        {
+          value: "18px",
+          text: "18",
+        },
+      ],
+      borderWidthOptions: [
+        {
+          value: "0px",
+          text: "None",
+        },
+        {
+          value: "1px",
+          text: "Thinest",
+        },
+        {
+          value: "2px",
+          text: "Thin",
+        },
+        {
+          value: "3px",
+          text: "Thick",
+        },
+        {
+          value: "4px",
+          text: "Thicker",
+        },
+      ],
+      connTypeOptions: [
+        {
+          value: "bezier",
+          text: "Bezier",
+        },
+        {
+          value: "step",
+          text: "Step",
+        },
+        {
+          value: "smoothstep",
+          text: "Smooth",
+        },
+      ],
+      connLineOptions: [
+        {
+          value: "solid",
+          text: "Solid",
+        },
+        {
+          value: "dashed",
+          text: "Dashed",
+        },
+        {
+          value: "animated",
+          text: "Animated",
+        },
+      ],
       chartActions: [
         {
           text: "Add New Step",
@@ -130,9 +290,34 @@ export default {
       );
     },
   },
+  created() {
+    // Style object should be exist in each node to provide reactivity
+    nodes.forEach((x) => {
+      if (x.style) return;
+
+      x.style = {
+        backgroundColor: "#ffffff",
+        borderColor: "#000000",
+        color: "#000000",
+        borderWidth: "1px",
+        fontSize: "12px",
+      };
+    });
+
+    connections.forEach((x) => {
+      if (x.style) {
+        x.style = {
+          borderColor: "#b1b1b7",
+          borderWidth: "2px",
+        };
+      }
+
+      if (!x.line) x.line = "solid";
+    });
+  },
   mounted() {
-    this.nodes = nodes;
-    this.connections = connections;
+    this.$set(this, "nodes", nodes);
+    this.$set(this, "connections", connections);
   },
   methods: {
     addNode(paste = false, toCursorPosition = true) {
@@ -153,6 +338,13 @@ export default {
           y: 10,
           name: "New",
           type: "io",
+          style: {
+            backgroundColor: "#ffffff",
+            borderColor: "#000000",
+            color: "#000000",
+            borderWidth: "1px",
+            fontSize: "12px",
+          },
         },
         toCursorPosition
       );
@@ -216,6 +408,8 @@ export default {
   components: {
     Chart,
     ChartContextmenu,
+    ColorPicker,
+    SelectDropdown,
   },
 };
 </script>
@@ -228,7 +422,33 @@ export default {
   border: 1px solid #e6e9ed;
 }
 
+/* Chart Options */
+
+.chart-options {
+  margin-bottom: 100px;
+  transform: translate(-50%, -150%);
+  z-index: 10000000000000;
+}
+
+.chart-options .widget {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 6px;
+  gap: 10px;
+  height: 100%;
+  background: #ffffff;
+  color: #9ca3af;
+  flex: none;
+  align-self: stretch;
+}
+
+/* Toolbar */
+
 .toolbar {
+  width: 310px;
   border-radius: 10px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid rgb(0, 0, 0, 0.08);
