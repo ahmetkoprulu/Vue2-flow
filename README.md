@@ -6,7 +6,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/ahmetkoprulu/okkes">
-    <img src="header.png" alt="Logo" width="500" height="300">
+    <img src="header.png" alt="Logo" width="900" height="300">
   </a>
 
 <h3 align="center">Vue2 Flow</h3>
